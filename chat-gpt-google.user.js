@@ -9,17 +9,12 @@
 // @grant        GM_log
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_addStyle
 // @namespace    https://greasyfork.org/users/950555
 // @require      https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js
 // ==/UserScript==
 
 const container = document.createElement("div");
-
-(async function () {
-  const question = new URL(window.location.href).searchParams.get("q");
-  initField()
-  getAnswer(question)
-})();
 
 function initField() {
   container.className = "chat-gpt-container";
@@ -33,6 +28,51 @@ function initField() {
     document.getElementById("rcnt").appendChild(container);
   }
 
+  GM_addStyle(`
+  .chat-gpt-container {
+    margin-bottom: 30px;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    padding: 15px;
+    flex-basis: 0;
+    flex-grow: 1;
+  }
+
+  .chat-gpt-container p {
+    margin: 0;
+  }
+
+  .chat-gpt-container .prefix {
+    font-weight: bold;
+  }
+
+  .chat-gpt-container .loading {
+    color: #b6b8ba;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .chat-gpt-container.sidebar-free {
+    margin-left: 60px;
+    height: fit-content;
+  }
+
+  .chat-gpt-container pre {
+    white-space: pre-wrap;
+    min-width: 0;
+    margin-bottom: 0;
+    line-height: 20px;
+  }
+  `)
 }
 
 function refreshFiled(answer) {
@@ -41,18 +81,21 @@ function refreshFiled(answer) {
 }
 
 function getAccessToken() {
-  return new Promise(resolve => {
+  return new Promise((resolve, rejcet) => {
     let accessToken = GM_getValue("accessToken")
     if (!accessToken) {
-      GM_log('get: ', accessToken)
       GM_xmlhttpRequest({
-        method: "GET",
-        url: "https://httpbin.org/get",
+        url: "https://chat.openai.com/api/auth/session",
         onload: function (response) {
-          const responseData = JSON.parse(response.responseText)
-          accessToken = responseData.headers["X-Amzn-Trace-Id"]
+          accessToken = JSON.parse(response.responseText).accessToken
           GM_setValue("accessToken", accessToken)
           resolve(accessToken)
+        },
+        onerror: function (error) {
+          rejcet(error)
+        },
+        ontimeout: () => {
+          GM_log("getAccessToken timeout!")
         }
       })
     } else {
@@ -61,25 +104,66 @@ function getAccessToken() {
   })
 }
 
-function getAnswer(question) {
-  getAccessToken().then(
-    accessToken => {
-      GM_xmlhttpRequest({
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        url: "https://httpbin.org/anything",
-        data: JSON.stringify({
-          hello: question
-        }),
-        onload: function (response) {
-          const responseData = JSON.parse(response.responseText)
-          GM_log(responseData)
-          refreshFiled(JSON.stringify(responseData.json))
+async function getAnswer(question) {
+  try {
+    const accessToken = await getAccessToken()
+    GM_xmlhttpRequest({
+      method: "POST",
+      url: "https://chat.openai.com/backend-api/conversation",
+      headers: {
+        "Content-Type": "	application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: JSON.stringify({
+        action: "next",
+        messages: [
+          {
+            id: uuidv4(),
+            role: "user",
+            content: {
+              content_type: "text",
+              parts: [question],
+            },
+          },
+        ],
+        model: "text-davinci-002-render",
+        parent_message_id: uuidv4(),
+      }),
+      // onloadstart: function (event) {
+      //   GM_log("getAnswer onloadstart: ", event)
+      // },
+      onloadend: function (event) {
+        GM_log("getAnswer onloadend: ", event)
+        if (event.response) {
+          const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
+          GM_log("answer: ", answer)
+  GM_log("type: ", typeof answer)
+  refreshFiled(answer)
         }
-      })
-    }
-  )
+      },
+      // onprogress: function (event) {
+      //   GM_log("getAnswer onprogress: ", event)
+      // },
+      // onreadystatechange: function (event) {
+      //   GM_log("getAnswer onreadystatechange: ", event)
+      // },
+      // onload: function (event) {
+      //   GM_log("getAnswer onload: ", event)
+      // },
+      onerror: function (event) {
+        GM_log("getAnswer onerror: ", event)
+      },
+      ontimeout: function (event) {
+        GM_log("getAnswer ontimeout: ", event)
+      }
+    })
+  } catch (error) {
+    GM_log("getAccessToken error: ", error)
+  }
 }
+
+(async function () {
+  const question = new URL(window.location.href).searchParams.get("q");
+  initField()
+  getAnswer(question)
+})();

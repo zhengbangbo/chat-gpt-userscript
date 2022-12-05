@@ -1,4 +1,4 @@
-# chat-gpt-userscript
+# chat-gpt-google-userscript
 A userscript to display ChatGPT response alongside Google Search results
 
 ![screenshot.jpg](./screenshot.jpg)
@@ -7,8 +7,8 @@ A userscript to display ChatGPT response alongside Google Search results
 
 ### Install Userscript Manager
 - Chrome install [TamperMonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) extension
-- Firefox install [GreaseMonkey](https://addons.mozilla.org/zh-CN/firefox/addon/greasemonkey/) extension。
-- Opera install [TamperMonkey](https://addons.opera.com/zh-cn/extensions/details/tampermonkey-beta/) extension。
+- Firefox install [GreaseMonkey](https://addons.mozilla.org/zh-CN/firefox/addon/greasemonkey/) extension
+- Opera install [TamperMonkey](https://addons.opera.com/zh-cn/extensions/details/tampermonkey-beta/) extension
 - Safari install [TamperMonkey](https://www.tampermonkey.net/index.php?ext=dhdg&browser=safari) extension
 
 ### Install and use userscript
