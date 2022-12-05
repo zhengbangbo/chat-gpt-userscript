@@ -1,17 +1,20 @@
 'use strict';
 // ==UserScript==
-// @name         chat-gpt-goole
-// @version      0.1
-// @description  Display ChatGPT response alongside Google Search results
-// @author       Zheng Bang-Bo(https://github.com/zhengbangbo)
-// @match        https://www.google.com/search*
-// @grant        GM_xmlhttpRequest
-// @grant        GM_log
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_addStyle
-// @namespace    https://greasyfork.org/users/950555
-// @require      https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js
+// @name               chat-gpt-google
+// @name:zh-CN         Google显示ChatGPT结果
+// @version            0.1
+// @description        Display ChatGPT response alongside Google Search results
+// @description:zh-CN  在 Google 搜索结果旁边显示 ChatGPT 回答
+// @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
+// @match              https://www.google.com/search*
+// @grant              GM_xmlhttpRequest
+// @grant              GM_log
+// @grant              GM_setValue
+// @grant              GM_getValue
+// @grant              GM_addStyle
+// @namespace          https://greasyfork.org/users/950555
+// @require            https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js
+// @license            MIT
 // ==/UserScript==
 
 const container = document.createElement("div");
@@ -133,12 +136,10 @@ async function getAnswer(question) {
       //   GM_log("getAnswer onloadstart: ", event)
       // },
       onloadend: function (event) {
-        GM_log("getAnswer onloadend: ", event)
+        // GM_log("getAnswer onloadend: ", event)
         if (event.response) {
           const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
-          GM_log("answer: ", answer)
-  GM_log("type: ", typeof answer)
-  refreshFiled(answer)
+          refreshFiled(answer)
         }
       },
       // onprogress: function (event) {
