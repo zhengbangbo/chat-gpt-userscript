@@ -90,7 +90,10 @@ function getAccessToken() {
       GM_xmlhttpRequest({
         url: "https://chat.openai.com/api/auth/session",
         onload: function (response) {
-          accessToken = JSON.parse(response.responseText).accessToken
+          const accessToken = JSON.parse(response.responseText).accessToken
+          if (!accessToken) {
+            rejcet("UNAUTHORIZED")
+          }
           GM_setValue("accessToken", accessToken)
           resolve(accessToken)
         },
@@ -159,6 +162,10 @@ async function getAnswer(question) {
       }
     })
   } catch (error) {
+    if (error === "UNAUTHORIZED") {
+      container.innerHTML =
+        '<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>';
+    }
     GM_log("getAccessToken error: ", error)
   }
 }

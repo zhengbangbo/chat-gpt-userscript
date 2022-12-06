@@ -12,7 +12,10 @@ A userscript to display ChatGPT response alongside Google Search results
 - Safari install [TamperMonkey](https://www.tampermonkey.net/index.php?ext=dhdg&browser=safari) extension
 
 ### Install and use userscript
-Install the userscript provided by this project. When you are finished, open the userscript Manager in the browser and click userscript in the list to enable it.
+
+Go to [Greasy Fork](https://greasyfork.org/scripts/456077) install the userscipt.
+
+When you are finished, open the userscript Manager in the browser and click userscript in the list to enable it.
 ## Inspired
 
 This project is inspired by [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension).
