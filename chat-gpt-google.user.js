@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name               chat-gpt-google
 // @name:zh-CN         Google显示ChatGPT结果
-// @version            0.1
+// @version            0.2.1
 // @description        Display ChatGPT response alongside Google Search results
 // @description:zh-CN  在 Google 搜索结果旁边显示 ChatGPT 回答
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
