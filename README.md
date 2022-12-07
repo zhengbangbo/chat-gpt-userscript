@@ -10,7 +10,7 @@ A userscript to display ChatGPT answer alongside Search results(Google/Bing/Baid
 
 1. Read [this help document](https://greasyfork.org/help/installing-user-scripts) to install the user script manager.
 
-2. Go to [Greasy Fork](https://greasyfork.org/scripts/456077) install the userscript(recommend) or [download directly](https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/chat-gpt-google.user.js).
+2. Go to [Greasy Fork](https://greasyfork.org/scripts/456077) install the userscript.
 
 ## Credit
 
