@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name               chat-gpt-google
 // @name:zh-CN         Google显示ChatGPT结果
-// @version            0.2.1
+// @version            0.2.2
 // @description        Display ChatGPT response alongside Google Search results
 // @description:zh-CN  在 Google 搜索结果旁边显示 ChatGPT 回答
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
@@ -11,6 +11,7 @@
 // @grant              GM_log
 // @grant              GM_setValue
 // @grant              GM_getValue
+// @grant              GM_deleteValue
 // @grant              GM_addStyle
 // @namespace          https://greasyfork.org/users/950555
 // @require            https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js
@@ -140,6 +141,10 @@ async function getAnswer(question) {
       // },
       onloadend: function (event) {
         // GM_log("getAnswer onloadend: ", event)
+        if (event.status === 401) {
+          GM_deleteValue("accessToken")
+          location.reload()
+        }
         if (event.response) {
           const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
           refreshFiled(answer)
