@@ -1,12 +1,16 @@
 'use strict';
 // ==UserScript==
-// @name               chat-gpt-google
-// @name:zh-CN         Google显示ChatGPT结果
-// @version            0.2.2
+// @name               chat-gpt-search(google/bing/baidu/duckduckgo)
+// @name:zh-CN         搜索结果显示ChatGPT结果（Google、Bing、百度和DuckDuckGo）
+// @version            0.3
 // @description        Display ChatGPT response alongside Google Search results
 // @description:zh-CN  在 Google 搜索结果旁边显示 ChatGPT 回答
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
 // @match              https://www.google.com/search*
+// @match              https://www.bing.com/search*
+// @match              https://cn.bing.com/search*
+// @match              https://www.baidu.com/s*
+// @match              https://duckduckgo.com/*
 // @grant              GM_xmlhttpRequest
 // @grant              GM_log
 // @grant              GM_setValue
@@ -20,16 +24,58 @@
 
 const container = document.createElement("div");
 
+function getSearchEngine() {
+  switch (location.hostname) {
+    case 'www.google.com':
+      return 'google'
+    case 'www.bing.com':
+    case 'cn.bing.com':
+      return 'bing'
+    case 'www.baidu.com':
+      return 'baidu'
+    case 'duckduckgo.com':
+      return 'duckduckgo'
+    default:
+      return 'unknow'
+  }
+}
+
+function getQuestion() {
+  switch (getSearchEngine) {
+    case 'baidu':
+      return new URL(window.location.href).searchParams.get("wd");
+    default:
+      return new URL(window.location.href).searchParams.get("q");
+  }
+}
+
 function initField() {
   container.className = "chat-gpt-container";
   container.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
+  let siderbarContainer = ''
 
-  const siderbarContainer = document.getElementById("rhs");
-  if (siderbarContainer) {
-    siderbarContainer.prepend(container);
-  } else {
-    container.classList.add("sidebar-free");
-    document.getElementById("rcnt").appendChild(container);
+  switch(getSearchEngine()){
+    case 'google':
+      siderbarContainer = document.getElementById("rhs");
+      if (siderbarContainer) {
+        siderbarContainer.prepend(container);
+      } else {
+        container.classList.add("sidebar-free");
+        document.getElementById("rcnt").appendChild(container);
+      }
+      break
+    case 'bing':
+      siderbarContainer = document.getElementById("b_context");
+      siderbarContainer.prepend(container);
+      break
+    case 'baidu':
+      siderbarContainer = document.getElementById("content_right");
+      siderbarContainer.prepend(container);
+      break
+    case 'duckduckgo':
+      siderbarContainer = document.getElementsByClassName("results--sidebar")[0]
+      siderbarContainer.prepend(container);
+      break
   }
 
   GM_addStyle(`
@@ -145,6 +191,9 @@ async function getAnswer(question) {
           GM_deleteValue("accessToken")
           location.reload()
         }
+        if (event.status != 401 && event != 200) {
+          GM_log('Oops, please submit this bug: https://github.com/zhengbangbo/chat-gpt-userscript/issues')
+        }
         if (event.response) {
           const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
           refreshFiled(answer)
@@ -176,7 +225,6 @@ async function getAnswer(question) {
 }
 
 (async function () {
-  const question = new URL(window.location.href).searchParams.get("q");
   initField()
-  getAnswer(question)
+  getAnswer(getQuestion())
 })();
