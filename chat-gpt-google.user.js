@@ -2,9 +2,9 @@
 // ==UserScript==
 // @name               chat-gpt-search(google/bing/baidu/duckduckgo)
 // @name:zh-CN         搜索结果显示ChatGPT结果（Google、Bing、百度和DuckDuckGo）
-// @version            0.3
-// @description        Display ChatGPT response alongside Google Search results
-// @description:zh-CN  在 Google 搜索结果旁边显示 ChatGPT 回答
+// @version            0.3.1
+// @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo)
+// @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度和DuckDuckGo）
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
 // @match              https://www.google.com/search*
 // @match              https://www.bing.com/search*
@@ -41,7 +41,7 @@ function getSearchEngine() {
 }
 
 function getQuestion() {
-  switch (getSearchEngine) {
+  switch (getSearchEngine()) {
     case 'baidu':
       return new URL(window.location.href).searchParams.get("wd");
     default:
@@ -54,7 +54,7 @@ function initField() {
   container.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
   let siderbarContainer = ''
 
-  switch(getSearchEngine()){
+  switch (getSearchEngine()) {
     case 'google':
       siderbarContainer = document.getElementById("rhs");
       if (siderbarContainer) {
@@ -191,8 +191,9 @@ async function getAnswer(question) {
           GM_deleteValue("accessToken")
           location.reload()
         }
-        if (event.status != 401 && event != 200) {
-          GM_log('Oops, please submit this bug: https://github.com/zhengbangbo/chat-gpt-userscript/issues')
+        if (event.status != 401 && event.status != 200) {
+          GM_log('Oops, maybe it is a bug, please submit https://github.com/zhengbangbo/chat-gpt-userscript/issues with follow log of event')
+          GM_log('event: ', event)
         }
         if (event.response) {
           const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
