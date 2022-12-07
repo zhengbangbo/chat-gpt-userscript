@@ -1,8 +1,8 @@
 'use strict';
 // ==UserScript==
-// @name               chat-gpt-search(google/bing/baidu/duckduckgo)
-// @name:zh-CN         搜索结果显示ChatGPT结果（Google、Bing、百度和DuckDuckGo）
-// @version            0.3.1
+// @name               chat-gpt-search-sidebar
+// @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
+// @version            0.3.2
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度和DuckDuckGo）
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
@@ -17,7 +17,7 @@
 // @grant              GM_getValue
 // @grant              GM_deleteValue
 // @grant              GM_addStyle
-// @namespace          https://greasyfork.org/users/950555
+// @namespace          https://greasyfork.org/scripts/456077
 // @require            https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js
 // @license            MIT
 // ==/UserScript==
