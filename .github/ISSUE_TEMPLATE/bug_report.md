@@ -24,10 +24,10 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop or Mobile (please complete the following information):**
- - OS: [e.g. macOS, iOS]
- - Browser [e.g. chrome, safari]
- - Userscript Manager [e.g. Tampermonkey, Violentmonkey]
- - Userscript Version [e.g. v0.3.2]
+ - OS: [e.g. Windows, macOS, iOS]
+ - Browser: [e.g. Chrome, Firefox, Safari]
+ - Userscript Manager: [e.g. Tampermonkey, Violentmonkey]
+ - Userscript Version: [e.g. v0.3.4]
 
 **Additional context**
 Add any other context about the problem here.
