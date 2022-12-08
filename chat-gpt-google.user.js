@@ -1,12 +1,13 @@
-'use strict';
 // ==UserScript==
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
-// @version            0.3.3
+// @version            0.3.4
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度和DuckDuckGo）
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
-// @match              https://www.google.*/search*
+// @match              https://www.google.com/search*
+// @match              https://www.google.com.hk/search*
+// @match              https://www.google.co.jp/search*
 // @match              https://www.bing.com/search*
 // @match              https://cn.bing.com/search*
 // @match              https://www.baidu.com/s*
@@ -21,13 +22,13 @@
 // @require            https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js
 // @updateURL          https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js
 // @downloadURL        https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js
+// @connect            chat.openai.com
 // @license            MIT
 // ==/UserScript==
 
 const container = document.createElement("div");
 
 function getSearchEngine() {
-  console.log(location.hostname)
   if (location.hostname.startsWith("www.google.")){
     return 'google'
   }
