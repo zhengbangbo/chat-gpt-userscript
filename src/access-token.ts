@@ -1,11 +1,15 @@
 import GM_fetch from "@trim21/gm-fetch";
 
 async function fetchAccessToken(): Promise<string> {
-  const res = await GM_fetch("https://chat.openai.com/api/auth/session");
-  const data = await res.json();
-  const remoteAccessToken = data.accessToken;
-  GM.setValue("OpenAIAccessToken", remoteAccessToken);
-  return remoteAccessToken;
+  try {
+    const res = await GM_fetch("https://chat.openai.com/api/auth/session");
+    const data = await res.json();
+    const remoteAccessToken = data.accessToken;
+    await GM.setValue("OpenAIAccessToken", remoteAccessToken)
+    return remoteAccessToken;
+  } catch (error) {
+    console.log("fetchAccessToken error: ", error)
+  }
 }
 
 export async function localAccessToken(): Promise<string> {

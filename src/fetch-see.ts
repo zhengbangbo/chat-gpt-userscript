@@ -5,7 +5,7 @@ export async function fetchSSE(resource: string, options: any) {
   const { onMessage, ...fetchOptions } = options;
   const resp = await GM_fetch(resource, fetchOptions);
 
-  if (resp.status != 200) throw new Error("401");
+  if (resp.status != 200) throw new Error(resp.status.toString());
 
   const parser = createParser((event) => {
     if (event.type === "event") {
