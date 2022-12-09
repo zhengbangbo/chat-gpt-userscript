@@ -2,8 +2,6 @@ name: deploy-preview
 
 on:
   push:
-    branches-ignore:
-      - main
     branches:
       - webpack
 

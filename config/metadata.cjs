@@ -1,14 +1,13 @@
 const {
   author,
-  name,
   repository,
   version,
 } = require("../package.json");
 
 module.exports = {
   name: {
-    "": name,
-    "zh-CN": "搜索结果侧栏显示 ChatGPT 回答",
+    "": "[Beta]chat-gpt-search-sidebar",
+    "zh-CN": "[Beta]搜索结果侧栏显示 ChatGPT 回答",
   },
   description: {
     "": "Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo)",
