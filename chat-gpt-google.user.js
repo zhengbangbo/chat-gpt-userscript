@@ -29,25 +29,25 @@
 const container = document.createElement("div");
 
 function getSearchEngine() {
-  if (location.hostname.startsWith("www.google.")){
-    return 'google'
+  if (location.hostname.startsWith("www.google.")) {
+    return "google";
   }
   switch (location.hostname) {
-    case 'www.bing.com':
-    case 'cn.bing.com':
-      return 'bing'
-    case 'www.baidu.com':
-      return 'baidu'
-    case 'duckduckgo.com':
-      return 'duckduckgo'
+    case "www.bing.com":
+    case "cn.bing.com":
+      return "bing";
+    case "www.baidu.com":
+      return "baidu";
+    case "duckduckgo.com":
+      return "duckduckgo";
     default:
-      return 'unknow'
+      return "unknow";
   }
 }
 
 function getQuestion() {
   switch (getSearchEngine()) {
-    case 'baidu':
+    case "baidu":
       return new URL(window.location.href).searchParams.get("wd");
     default:
       return new URL(window.location.href).searchParams.get("q");
@@ -56,11 +56,12 @@ function getQuestion() {
 
 function initField() {
   container.className = "chat-gpt-container";
-  container.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
-  let siderbarContainer = ''
+  container.innerHTML =
+    '<p class="loading">Waiting for ChatGPT response...</p>';
+  let siderbarContainer = "";
 
   switch (getSearchEngine()) {
-    case 'google':
+    case "google":
       siderbarContainer = document.getElementById("rhs");
       if (siderbarContainer) {
         siderbarContainer.prepend(container);
@@ -68,19 +69,20 @@ function initField() {
         container.classList.add("sidebar-free");
         document.getElementById("rcnt").appendChild(container);
       }
-      break
-    case 'bing':
+      break;
+    case "bing":
       siderbarContainer = document.getElementById("b_context");
       siderbarContainer.prepend(container);
-      break
-    case 'baidu':
+      break;
+    case "baidu":
       siderbarContainer = document.getElementById("content_right");
       siderbarContainer.prepend(container);
-      break
-    case 'duckduckgo':
-      siderbarContainer = document.getElementsByClassName("results--sidebar")[0]
+      break;
+    case "duckduckgo":
+      siderbarContainer =
+        document.getElementsByClassName("results--sidebar")[0];
       siderbarContainer.prepend(container);
-      break
+      break;
   }
 
   GM_addStyle(`
@@ -130,44 +132,45 @@ function initField() {
     margin-bottom: 0;
     line-height: 20px;
   }
-  `)
+  `);
 }
 
 function refreshFiled(answer) {
-  container.innerHTML = '<p><span class="prefix">Chat GPT</span><pre></pre></p>';
+  container.innerHTML =
+    '<p><span class="prefix">Chat GPT</span><pre></pre></p>';
   container.querySelector("pre").textContent = answer;
 }
 
 function getAccessToken() {
   return new Promise((resolve, rejcet) => {
-    let accessToken = GM_getValue("accessToken")
+    let accessToken = GM_getValue("accessToken");
     if (!accessToken) {
       GM_xmlhttpRequest({
         url: "https://chat.openai.com/api/auth/session",
         onload: function (response) {
-          const accessToken = JSON.parse(response.responseText).accessToken
+          const accessToken = JSON.parse(response.responseText).accessToken;
           if (!accessToken) {
-            rejcet("UNAUTHORIZED")
+            rejcet("UNAUTHORIZED");
           }
-          GM_setValue("accessToken", accessToken)
-          resolve(accessToken)
+          GM_setValue("accessToken", accessToken);
+          resolve(accessToken);
         },
         onerror: function (error) {
-          rejcet(error)
+          rejcet(error);
         },
         ontimeout: () => {
-          GM_log("getAccessToken timeout!")
-        }
-      })
+          GM_log("getAccessToken timeout!");
+        },
+      });
     } else {
-      resolve(accessToken)
+      resolve(accessToken);
     }
-  })
+  });
 }
 
 async function getAnswer(question) {
   try {
-    const accessToken = await getAccessToken()
+    const accessToken = await getAccessToken();
     GM_xmlhttpRequest({
       method: "POST",
       url: "https://chat.openai.com/backend-api/conversation",
@@ -196,16 +199,20 @@ async function getAnswer(question) {
       onloadend: function (event) {
         // GM_log("getAnswer onloadend: ", event)
         if (event.status === 401) {
-          GM_deleteValue("accessToken")
-          location.reload()
+          GM_deleteValue("accessToken");
+          location.reload();
         }
         if (event.status != 401 && event.status != 200) {
-          GM_log('Oops, maybe it is a bug, please submit https://github.com/zhengbangbo/chat-gpt-userscript/issues with follow log of event')
-          GM_log('event: ', event)
+          GM_log(
+            "Oops, maybe it is a bug, please submit https://github.com/zhengbangbo/chat-gpt-userscript/issues with follow log of event"
+          );
+          GM_log("event: ", event);
         }
         if (event.response) {
-          const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
-          refreshFiled(answer)
+          const answer = JSON.parse(
+            event.response.split("\n\n").slice(-3, -2)[0].slice(6)
+          ).message.content.parts[0];
+          refreshFiled(answer);
         }
       },
       // onprogress: function (event) {
@@ -218,22 +225,22 @@ async function getAnswer(question) {
       //   GM_log("getAnswer onload: ", event)
       // },
       onerror: function (event) {
-        GM_log("getAnswer onerror: ", event)
+        GM_log("getAnswer onerror: ", event);
       },
       ontimeout: function (event) {
-        GM_log("getAnswer ontimeout: ", event)
-      }
-    })
+        GM_log("getAnswer ontimeout: ", event);
+      },
+    });
   } catch (error) {
     if (error === "UNAUTHORIZED") {
       container.innerHTML =
         '<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>';
     }
-    GM_log("getAccessToken error: ", error)
+    GM_log("getAccessToken error: ", error);
   }
 }
 
 (async function () {
-  initField()
-  getAnswer(getQuestion())
+  initField();
+  getAnswer(getQuestion());
 })();

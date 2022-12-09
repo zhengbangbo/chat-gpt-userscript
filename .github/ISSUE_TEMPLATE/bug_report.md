@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
+title: ""
 labels: bug
-assignees: ''
-
+assignees: ""
 ---
 
 **Describe the bug**
@@ -12,6 +11,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -24,10 +24,11 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop or Mobile (please complete the following information):**
- - OS: [e.g. Windows, macOS, iOS]
- - Browser: [e.g. Chrome, Firefox, Safari]
- - Userscript Manager: [e.g. Tampermonkey, Violentmonkey]
- - Userscript Version: [e.g. v0.3.4]
+
+-   OS: [e.g. Windows, macOS, iOS]
+-   Browser: [e.g. Chrome, Firefox, Safari]
+-   Userscript Manager: [e.g. Tampermonkey, Violentmonkey]
+-   Userscript Version: [e.g. v0.3.4]
 
 **Additional context**
 Add any other context about the problem here.
