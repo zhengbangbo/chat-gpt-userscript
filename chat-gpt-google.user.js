@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
-// @version            0.3.5
+// @version            0.3.6
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度和DuckDuckGo）
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
@@ -92,6 +92,8 @@ function initField() {
     padding: 15px;
     flex-basis: 0;
     flex-grow: 1;
+    word-wrap: break-word;
+    white-space: pre-wrap;
   }
 
   .chat-gpt-container p {
