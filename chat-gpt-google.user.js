@@ -10,9 +10,9 @@
 // @match              https://www.google.co.jp/search*
 // @match              https://www.bing.com/search*
 // @match              https://cn.bing.com/search*
-// @match              https://www.deepl.com/translator*
 // @match              https://www.baidu.com/s*
 // @match              https://duckduckgo.com/*
+// @match              https://www.deepl.com/translator*
 // @grant              GM_xmlhttpRequest
 // @grant              GM_log
 // @grant              GM_setValue
@@ -34,17 +34,17 @@ function getSearchEngine() {
     return 'google'
   }
   switch (location.hostname) {
-      case 'www.bing.com':
-      case 'cn.bing.com':
-          return 'bing'
-      case 'www.baidu.com':
-          return 'baidu'
-      case 'duckduckgo.com':
-          return 'duckduckgo'
-      case 'www.deepl.com':
-          return 'deepl'
-      default:
-          return 'unknow'
+    case 'www.bing.com':
+    case 'cn.bing.com':
+      return 'bing'
+    case 'www.baidu.com':
+      return 'baidu'
+    case 'duckduckgo.com':
+      return 'duckduckgo'
+    case 'www.deepl.com':
+      return 'deepl'
+    default:
+      return 'unknow'
   }
 }
 
@@ -63,48 +63,48 @@ function initField() {
   let siderbarContainer = ''
 
   switch (getSearchEngine()) {
-      case 'google':
-          siderbarContainer = document.getElementById("rhs");
-          if (siderbarContainer) {
-              siderbarContainer.prepend(container);
-          } else {
-              container.classList.add("sidebar-free");
-              document.getElementById("rcnt").appendChild(container);
+    case 'google':
+      siderbarContainer = document.getElementById("rhs");
+      if (siderbarContainer) {
+        siderbarContainer.prepend(container);
+      } else {
+        container.classList.add("sidebar-free");
+        document.getElementById("rcnt").appendChild(container);
+      }
+      break
+    case 'bing':
+      siderbarContainer = document.getElementById("b_context");
+      siderbarContainer.prepend(container);
+      break
+    case 'baidu':
+      siderbarContainer = document.getElementById("content_right");
+      siderbarContainer.prepend(container);
+      break
+    case 'duckduckgo':
+      siderbarContainer = document.getElementsByClassName("results--sidebar")[0]
+      siderbarContainer.prepend(container);
+      break
+    case 'deepl':
+      container.style.maxWidth='1000px';
+      var button = document.createElement("button");
+      button.innerHTML = "Chat Gpt翻译";
+      document.getElementsByClassName("lmt__textarea_container")[0].appendChild(button);
+      button.addEventListener("click", function() {
+          try{
+              container.remove();
+              container.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
+          }catch{}
+          try{
+              document.getElementsByClassName("lmt__textarea_container lmt__raise_alternatives_placement")[0].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
           }
-          break
-      case 'bing':
-          siderbarContainer = document.getElementById("b_context");
-          siderbarContainer.prepend(container);
-          break
-      case 'baidu':
-          siderbarContainer = document.getElementById("content_right");
-          siderbarContainer.prepend(container);
-          break
-      case 'duckduckgo':
-          siderbarContainer = document.getElementsByClassName("results--sidebar")[0]
-          siderbarContainer.prepend(container);
-          break
-      case 'deepl':
-          container.style.maxWidth='1000px';
-          var button = document.createElement("button");
-          button.innerHTML = "Chat Gpt翻译";
-          document.getElementsByClassName("lmt__textarea_container")[0].appendChild(button);
-          button.addEventListener("click", function() {
-              try{
-                  container.remove();
-                  container.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
-              }catch{}
-              try{
-                  document.getElementsByClassName("lmt__textarea_container lmt__raise_alternatives_placement")[0].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
-              }
-              catch{
-                  document.getElementsByClassName("lmt__textarea_container")[1].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
-              }
-              let outlang=document.querySelectorAll("strong[data-testid='deepl-ui-tooltip-target']")[0].innerHTML
-              let question='翻译以下内容为'+outlang+'，注意，你必须只返回翻译完成的文本，不允许返回其他任何无关内容：'+document.getElementById('source-dummydiv').innerHTML
-              getAnswer(question)
-          });
-
+          catch{
+              document.getElementsByClassName("lmt__textarea_container")[1].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
+          }
+          let outlang=document.querySelectorAll("strong[data-testid='deepl-ui-tooltip-target']")[0].innerHTML
+          let question='翻译以下内容为'+outlang+'，注意，你必须只返回翻译完成的文本，不允许返回其他任何无关内容：'+document.getElementById('source-dummydiv').innerHTML
+          getAnswer(question)
+      });
+      break
   }
 
   GM_addStyle(`
