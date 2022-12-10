@@ -21,6 +21,8 @@
 // @grant              GM_addStyle
 // @namespace          https://greasyfork.org/scripts/456077
 // @require            https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js
+// @updateURL          https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js
+// @downloadURL        https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js
 // @connect            chat.openai.com
 // @license            MIT
 // ==/UserScript==
