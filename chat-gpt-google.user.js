@@ -30,7 +30,7 @@
 const container = document.createElement("div");
 
 function getSearchEngine() {
-  if (location.hostname.startsWith("www.google.")){
+  if (location.hostname.startsWith("www.google.")) {
     return 'google'
   }
   switch (location.hostname) {
@@ -57,9 +57,13 @@ function getQuestion() {
   }
 }
 
-function initField() {
+function initContainer() {
   container.className = "chat-gpt-container";
   container.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
+}
+
+function initField() {
+  initContainer()
   let siderbarContainer = ''
 
   switch (getSearchEngine()) {
@@ -85,24 +89,22 @@ function initField() {
       siderbarContainer.prepend(container);
       break
     case 'deepl':
-      container.style.maxWidth='1000px';
-      var button = document.createElement("button");
-      button.innerHTML = "Chat Gpt翻译";
+      container.style.maxWidth = '1000px';
+      const button = document.createElement("button");
+      button.innerHTML = "Chat GPT Translate";
+      button.className = "chat-gpt-translate-button"
       document.getElementsByClassName("lmt__textarea_container")[0].appendChild(button);
-      button.addEventListener("click", function() {
-          try{
-              container.remove();
-              container.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
-          }catch{}
-          try{
-              document.getElementsByClassName("lmt__textarea_container lmt__raise_alternatives_placement")[0].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
-          }
-          catch{
-              document.getElementsByClassName("lmt__textarea_container")[1].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
-          }
-          let outlang=document.querySelectorAll("strong[data-testid='deepl-ui-tooltip-target']")[0].innerHTML
-          let question='翻译以下内容为'+outlang+'，注意，你必须只返回翻译完成的文本，不允许返回其他任何无关内容：'+document.getElementById('source-dummydiv').innerHTML
-          getAnswer(question)
+      button.addEventListener("click", function () {
+        initContainer()
+        try {
+          document.getElementsByClassName("lmt__raise_alternatives_placement")[0].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
+        }
+        catch {
+          document.getElementsByClassName("lmt__textarea_container")[1].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
+        }
+        let outlang = document.querySelectorAll("strong[data-testid='deepl-ui-tooltip-target']")[0].innerHTML
+        let question = 'Translate the following paragraph into ' + outlang + ' and only '+ outlang +'\n\n' + document.getElementById('source-dummydiv').innerHTML
+        getAnswer(question)
       });
       break
   }
@@ -153,6 +155,17 @@ function initField() {
     min-width: 0;
     margin-bottom: 0;
     line-height: 20px;
+  }
+
+  .chat-gpt-translate-button {
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    padding: 5px;
+  }
+
+  .chat-gpt-translate-button:hover {
+    color: #006494;
+    transition: color 100ms ease-out;
   }
   `)
 }
