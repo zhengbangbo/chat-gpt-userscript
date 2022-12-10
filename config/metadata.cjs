@@ -29,7 +29,7 @@ module.exports = {
     "https://duckduckgo.com/*",
   ],
   require: [],
-  grant: ["GM.xmlHttpRequest", "GM.setValue", "GM.getValue", "GM.deleteValue"],
+  grant: ["GM.xmlHttpRequest"],
   connect: ["chat.openai.com"],
   "run-at": "document-end",
 };

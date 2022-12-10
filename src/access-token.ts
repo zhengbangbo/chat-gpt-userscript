@@ -5,7 +5,8 @@ async function fetchAccessToken(): Promise<string> {
     const res = await GM_fetch("https://chat.openai.com/api/auth/session");
     const data = await res.json();
     const remoteAccessToken = data.accessToken;
-    await GM.setValue("OpenAIAccessToken", remoteAccessToken)
+    // GM.setValue("OpenAIAccessToken", remoteAccessToken)
+    localStorage.setItem("OpenAIAccessToken", remoteAccessToken)
     return remoteAccessToken;
   } catch (error) {
     console.log("fetchAccessToken error: ", error)
@@ -13,7 +14,8 @@ async function fetchAccessToken(): Promise<string> {
 }
 
 export async function localAccessToken(): Promise<string> {
-  const localAccessToken = (await GM.getValue("OpenAIAccessToken")) as string;
+  // const localAccessToken = (await GM.getValue("OpenAIAccessToken")) as string;
+  const localAccessToken = localStorage.getItem("OpenAIAccessToken")
   if (typeof localAccessToken === "undefined") {
     const remoteAccessToken = await fetchAccessToken();
     return remoteAccessToken;
@@ -23,6 +25,7 @@ export async function localAccessToken(): Promise<string> {
 }
 
 export async function reloadAccessToken() {
-  GM.deleteValue("OpenAIAccessToken");
+  // GM.deleteValue("OpenAIAccessToken");
+  localStorage.removeItem("OpenAIAccessToken")
   await fetchAccessToken();
 }
