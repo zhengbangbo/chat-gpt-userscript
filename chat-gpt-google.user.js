@@ -29,7 +29,7 @@
 
 const container = document.createElement("div");
 
-function getSearchEngine() {
+function getWebsite() {
   if (location.hostname.startsWith("www.google.")) {
     return 'google'
   }
@@ -49,7 +49,7 @@ function getSearchEngine() {
 }
 
 function getQuestion() {
-  switch (getSearchEngine()) {
+  switch (getWebsite()) {
     case 'baidu':
       return new URL(window.location.href).searchParams.get("wd");
     default:
@@ -66,7 +66,7 @@ function initField() {
   initContainer()
   let siderbarContainer = ''
 
-  switch (getSearchEngine()) {
+  switch (getWebsite()) {
     case 'google':
       siderbarContainer = document.getElementById("rhs");
       if (siderbarContainer) {
@@ -272,5 +272,8 @@ async function getAnswer(question) {
 
 (async function () {
   initField()
-  getAnswer(getQuestion())
+  if (getWebsite() != 'deepl') {
+    // TODO: Deal with it this way for the time being and reconstruct it later.
+    getAnswer(getQuestion())
+  }
 })();
