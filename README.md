@@ -27,15 +27,15 @@ A userscript to display ChatGPT answer alongside
 Unable to print verbatim like the browser plugin [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension), resulting in slow results in the experience. If you mind, it is recommended to use the above plugin.
 
 ## Compatibility
-> Welcome to submit the test results to [GitHub Issue](https://github.com/zhengbangbo/chat-gpt-userscript/issues).
+> If you have the ability to solve compatibility issues, PR is welcome.
 
 |                       | **Chrome** | **Microsoft Edge** | **Firefox** | **Safari** |
 |-----------------------|:----------:|:------------------:|:-----------:|:----------:|
-| **Tampermonkey**      |     OK     |                    |      OK     |     NG     |
-| **Violentmonkey**     |     OK     |                    |      OK     |      -     |
+| **Tampermonkey**      |     OK     |         OK         |      OK     |     NG     |
+| **Violentmonkey**     |     OK     |         OK         |      OK     |      -     |
 | **Greasemonkey**      |      -     |          -         |      NG     |      -     |
 | **Userscripts**       |      -     |          -         |      -      |     NG     |
-| **ScriptCat(脚本猫)**  |            |                    |      OK     |      -     |
+| **ScriptCat(脚本猫)**  |     NG     |         NG         |      NG     |      -     |
 
 ## Credits
 
