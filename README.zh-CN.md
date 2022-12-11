@@ -22,22 +22,22 @@
 
 2. 去 [Greasy Fork](https://greasyfork.org/scripts/456077) 安装脚本。
 
-## 局限
-
-无法像浏览器插件 [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension) 那样逐字打印，导致体验上感觉缓慢。如果你介意的话，推荐你使用上述插件。
-
 ## 兼容性
 > 如果你有能力解决兼容性问题，欢迎 PR。
 
 |                       | **Chrome** | **Microsoft Edge** | **Firefox** | **Safari** |
 |-----------------------|:----------:|:------------------:|:-----------:|:----------:|
 | **Tampermonkey**      |     OK     |         OK         |      OK     |     NG     |
-| **Violentmonkey**     |     OK     |         OK         |      OK     |      -     |
+| **Violentmonkey(*)**  |     OK     |         OK         |      OK     |      -     |
 | **Greasemonkey**      |      -     |          -         |      NG     |      -     |
 | **Userscripts**       |      -     |          -         |      -      |     NG     |
 | **ScriptCat(脚本猫)**  |     NG     |         NG         |      NG     |      -     |
 
+*: ViolentMoney 无法逐字打印，因为它不支持 stream 响应类型[^vm].
+
+[^vm]: https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
 ## 致谢
 
 - 本项目受 [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension) 启发。
 - 感谢 [@duck123ducker](https://github.com/duck123ducker) 贡献的对 DeepL 翻译器的支持([#9](https://github.com/zhengbangbo/chat-gpt-userscript/pull/9)).
+- 感谢 [bigonion](https://greasyfork.org/users/827969)，本项目接收处理 stream 类型数据部分借鉴了 [chatGPT tools Plus ++](https://greasyfork.org/scripts/456131/code?version=1127217)。

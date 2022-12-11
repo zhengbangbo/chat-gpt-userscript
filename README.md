@@ -22,22 +22,22 @@ A userscript to display ChatGPT answer alongside
 
 2. Go to [Greasy Fork](https://greasyfork.org/scripts/456077) install the userscript.
 
-## Limitation
-
-Unable to print verbatim like the browser plugin [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension), resulting in slow results in the experience. If you mind, it is recommended to use the above plugin.
-
 ## Compatibility
 > If you have the ability to solve compatibility issues, PR is welcome.
 
 |                       | **Chrome** | **Microsoft Edge** | **Firefox** | **Safari** |
 |-----------------------|:----------:|:------------------:|:-----------:|:----------:|
 | **Tampermonkey**      |     OK     |         OK         |      OK     |     NG     |
-| **Violentmonkey**     |     OK     |         OK         |      OK     |      -     |
+| **Violentmonkey(*)**  |     OK     |         OK         |      OK     |      -     |
 | **Greasemonkey**      |      -     |          -         |      NG     |      -     |
 | **Userscripts**       |      -     |          -         |      -      |     NG     |
 | **ScriptCat(脚本猫)**  |     NG     |         NG         |      NG     |      -     |
 
+*: Violentmonkey unable to print verbatim because it can't support stream responseType[^vm].
+
+[^vm]: https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
 ## Credits
 
 - This project is inspired by [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension).
 - Thanks to [@duck123ducker](https://github.com/duck123ducker) for contribute the support of deepl translator([#9](https://github.com/zhengbangbo/chat-gpt-userscript/pull/9)).
+- Thanks to [bigonion](https://greasyfork.org/users/827969), the receiving stream type data part of the project draws on [chatGPT tools Plus ++](https://greasyfork.org/scripts/456131/code?version=1127217).
