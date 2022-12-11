@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
-// @version            0.4.0
+// @version            0.4.1
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)

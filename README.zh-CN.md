@@ -5,29 +5,29 @@
 [![PR](https://img.shields.io/github/issues-pr/zhengbangbo/chat-gpt-userscript)](https://github.com/zhengbangbo/chat-gpt-userscript/pulls)
 [![license](https://img.shields.io/github/license/zhengbangbo/chat-gpt-userscript?color=blue)](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/LICENSE)
 
-[中文版](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/README.zh-CN.md)
+[English Version](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/README.md)
 
-> If you have any BUG feedback or would like to submit a PR, please go to [GitHub](https://github.com/zhengbangbo/chat-gpt-userscript).
+> 如果你有任何 BUG 反馈或想要提交 PR，欢迎前往 [GitHub](https://github.com/zhengbangbo/chat-gpt-userscript)
 
-A userscript to display ChatGPT answer alongside
-- Search Engine ([Google](https://www.google.com/search?q=chatgpt)/[Bing](https://www.bing.com/search?q=who+am+i)/[Baidu](https://www.baidu.com/s?wd=Where%20am%20I%20from%3F)/[DuckDuckGo](https://duckduckgo.com/?q=Where+am+I+going%3F))
-- Translator ([DeepL](https://www.deepl.com/translator#zh/en/%E5%9C%A8%E5%B9%B3%E5%9D%A6%E7%9A%84%E9%81%93%E8%B7%AF%E4%B8%8A%E6%9B%B2%E6%8A%98%E5%89%8D%E8%A1%8C))
+在搜索引擎和翻译器旁显示ChatGPT回答的油猴脚本
+- 搜索引擎 ([Google](https://www.google.com/search?q=chatgpt)/[Bing](https://www.bing.com/search?q=who+am+i)/[Baidu](https://www.baidu.com/s?wd=Where%20am%20I%20from%3F)/[DuckDuckGo](https://duckduckgo.com/?q=Where+am+I+going%3F))
+- 翻译器 ([DeepL](https://www.deepl.com/translator#zh/en/%E5%9C%A8%E5%B9%B3%E5%9D%A6%E7%9A%84%E9%81%93%E8%B7%AF%E4%B8%8A%E6%9B%B2%E6%8A%98%E5%89%8D%E8%A1%8C))
 
 ![screenshot.jpg](https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/screenshot.jpg)
 ![screenshot2.png](https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/screenshot2.png)
 
-## Installation
+## 安装
 
-1. Read [this help document](https://greasyfork.org/help/installing-user-scripts) to install the user script manager.
+1. 阅读 [这篇帮助文档](https://greasyfork.org/help/installing-user-scripts) 去安装合适的脚本管理器。
 
-2. Go to [Greasy Fork](https://greasyfork.org/scripts/456077) install the userscript.
+2. 去 [Greasy Fork](https://greasyfork.org/scripts/456077) 安装脚本。
 
-## Limitation
+## 局限
 
-Unable to print verbatim like the browser plugin [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension), resulting in slow results in the experience. If you mind, it is recommended to use the above plugin.
+无法像浏览器插件 [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension) 那样逐字打印，导致体验上感觉缓慢。如果你介意的话，推荐你使用上述插件。
 
-## Compatibility
-> Welcome to submit the test results to [GitHub Issue](https://github.com/zhengbangbo/chat-gpt-userscript/issues).
+## 兼容性
+> 欢迎提交测试结果在 [GitHub Issue](https://github.com/zhengbangbo/chat-gpt-userscript/issues)。
 
 |                       | **Chrome** | **Microsoft Edge** | **Firefox** | **Safari** |
 |-----------------------|:----------:|:------------------:|:-----------:|:----------:|
@@ -37,7 +37,7 @@ Unable to print verbatim like the browser plugin [wong2/chat-gpt-google-extensio
 | **Userscripts**       |      -     |          -         |      -      |     NG     |
 | **ScriptCat(脚本猫)**  |            |                    |      OK     |      -     |
 
-## Credits
+## 致谢
 
 - This project is inspired by [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension).
 - Thanks to [@duck123ducker](https://github.com/duck123ducker) for contribute the support of deepl translator([#9](https://github.com/zhengbangbo/chat-gpt-userscript/pull/9)).
