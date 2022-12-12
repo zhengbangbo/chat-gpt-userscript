@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { version } from './package.json'
 import monkey from 'vite-plugin-monkey';
 
 // https://vitejs.dev/config/
@@ -7,13 +8,12 @@ export default defineConfig({
     monkey({
       entry: 'src/main.js',
       userscript: {
-        icon: 'https://vitejs.dev/logo.svg',
-        namespace: 'npm/vite-plugin-monkey',
+        icon: 'https://www.google.com/s2/favicons?sz=64&domain=openai.com',
         name: {
           '': 'chat-gpt-search-sidebar',
           "zh-CN": '搜索结果侧栏显示 ChatGPT 回答',
         },
-        version: '0.5.1',
+        version,
         description: {
           '': 'Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)',
           'zh-CN': '在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）',
@@ -216,15 +216,14 @@ export default defineConfig({
           'https://duckduckgo.com/*',
           'https://www.deepl.com/translator*',
         ],
-        grant: ['GM_xmlhttpRequest',
-          'GM_log',
+        grant: [
+          'GM_xmlhttpRequest',
           'GM_setValue',
           'GM_getValue',
           'GM_deleteValue',
           'GM_addStyle',
         ],
-        // namespace: 'https://greasyfork.org/scripts/456077',
-        require: 'https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js',
+        namespace: 'https://greasyfork.org/scripts/456077',
         updateURL: 'https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js',
         downloadURL: 'https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js',
         connect: 'chat.openai.com',

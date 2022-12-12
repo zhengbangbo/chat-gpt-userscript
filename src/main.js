@@ -1,4 +1,6 @@
-import { GM_addStyle, GM_xmlhttpRequest, GM_setValue, GM_getValue, GM_deleteValue} from '$';
+import './style.css'
+import { GM_xmlhttpRequest, GM_setValue, GM_getValue, GM_deleteValue, GM_info} from '$';
+import { uuidv4 } from './utils/uuid'
 
 const container = document.createElement("div");
 function getContainer() {
@@ -123,68 +125,6 @@ function initUI() {
     default:
       alertUnknowError()
   }
-}
-
-function addStyle() {
-  GM_addStyle(`
-  .chat-gpt-container {
-    max-width: 369px;
-    margin-bottom: 30px;
-    border-radius: 8px;
-    border: 1px solid #dadce0;
-    padding: 15px;
-    flex-basis: 0;
-    flex-grow: 1;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-  }
-
-  .chat-gpt-container p {
-    margin: 0;
-  }
-
-  .chat-gpt-container .prefix {
-    font-weight: bold;
-  }
-
-  .chat-gpt-container .loading {
-    color: #b6b8ba;
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-  }
-
-  .chat-gpt-container.sidebar-free {
-    margin-left: 60px;
-    height: fit-content;
-  }
-
-  .chat-gpt-container pre {
-    white-space: pre-wrap;
-    min-width: 0;
-    margin-bottom: 0;
-    line-height: 20px;
-  }
-
-  .chat-gpt-translate-button {
-    border-radius: 8px;
-    border: 1px solid #dadce0;
-    padding: 5px;
-  }
-
-  .chat-gpt-translate-button:hover {
-    color: #006494;
-    transition: color 100ms ease-out;
-  }
-  `)
 }
 
 function containerShow(answer) {
@@ -361,23 +301,22 @@ async function getAnswer(question) {
       onloadstart: onloadstart(),
       onloadend: onloadend(),
       onerror: function (event) {
-        GM_log("getAnswer onerror: ", event)
+        console.log("getAnswer onerror: ", event)
       },
       ontimeout: function (event) {
-        GM_log("getAnswer ontimeout: ", event)
+        console.log("getAnswer ontimeout: ", event)
       }
     })
   } catch (error) {
     if (error === "UNAUTHORIZED") {
       alertLogin()
     }
-    GM_log("getAccessToken error: ", error)
+    console.log("getAccessToken error: ", error)
   }
 
 }
 
 async function main() {
-  addStyle()
   initUI()
   if (getWebsite().type === "immediately") {
     getAnswer(getQuestion())
