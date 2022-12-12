@@ -413,6 +413,7 @@ function containerAlert(htmlStr) {
 }
 
 function alertLogin() {
+  GM_deleteValue("accessToken")
   containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>')
 }
 
@@ -481,6 +482,22 @@ async function getAnswer(question) {
       return function () { }
     }
   }
+  function isTokenExpired(text) {
+    try {
+      return JSON.parse(text).detail.code === 'token_expired'
+    } catch (error) {
+      return false
+    }
+  }
+  function isBlockedbyCloudflare(resp) {
+    try {
+      const html = new DOMParser.parseFromString(resp, "text/html")
+      return html !== undefined
+    } catch (error) {
+      return false
+
+    }
+  }
   function onloadstart() {
     if (getUserscriptManager() === "Violentmonkey") {
       return function () { }
@@ -489,11 +506,18 @@ async function getAnswer(question) {
         const reader = stream.response.getReader();
         reader.read().then(function processText({ done, value }) {
           if (done) {
-            alertNetworkException()
             return;
           }
           let responseItem = String.fromCharCode(...Array.from(value))
           const items = responseItem.split('\n\n')
+          if (isTokenExpired(items[0])) {
+            alertLogin()
+            return
+          }
+          if (isBlockedbyCloudflare(responseItem)) {
+            alertNetworkException()
+            return
+          }
           console.log("items: ", items)
           // Sometimes receive more than one message at a time.
           // Pick the last item
