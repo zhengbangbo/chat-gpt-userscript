@@ -144,7 +144,7 @@ function alertLogin() {
 }
 
 function alertUnknowError() {
-  containerAlert('<p>Oops, maybe it is a bug, please submit <a href="https://github.com/zhengbangbo/chat-gpt-userscript/issues" target="_blank">https://github.com/zhengbangbo/chat-gpt-userscript/issues</a> with follow log of event</p>')
+  containerAlert('<p>Oops, maybe it is a bug, please check or submit <a href="https://github.com/zhengbangbo/chat-gpt-userscript/issues" target="_blank">https://github.com/zhengbangbo/chat-gpt-userscript/issues</a>.</p>')
 }
 
 function alertNetworkException() {
@@ -196,8 +196,15 @@ async function getAnswer(question) {
           GM_deleteValue("accessToken")
           location.reload()
         }
+        if (event.status === 403) {
+          // alertNetworkException()
+          // maybe feel better
+          alertLogin()
+        }
         if (event.status != 401 && event.status != 200) {
-          alertUnknowError()
+          // alertUnknowError()
+          // too...
+          alertLogin()
         }
         if (event.response) {
           const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
