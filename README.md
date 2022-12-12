@@ -36,6 +36,10 @@ A userscript to display ChatGPT answer alongside
 *: Violentmonkey unable to print verbatim because it can't support stream responseType[^vm].
 
 [^vm]: https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
+
+## Contribution
+This project is now built using [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey). Questions related to the development process are answered in [the documentation of the project](https://github.com/lisonge/vite-plugin-monkey#some-note).
+
 ## Credits
 
 - This project is inspired by [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension).
