@@ -36,6 +36,10 @@
 *: ViolentMoney 无法逐字打印，因为它不支持 stream 响应类型[^vm].
 
 [^vm]: https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
+
+## Contribution
+本项目现在使用 [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey) 构建，开发过程相关问题在[该项目的文档](https://github.com/lisonge/vite-plugin-monkey#some-note)中都有解答。
+
 ## 致谢
 
 - 本项目受 [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension) 启发。
