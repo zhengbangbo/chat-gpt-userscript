@@ -372,16 +372,12 @@ async function getAnswer(question) {
     })
   } catch (error) {
     if (error === "UNAUTHORIZED") {
-      const container = getContainer()
-      container.innerHTML =
-        '<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>';
+      alertLogin()
     }
     GM_log("getAccessToken error: ", error)
   }
 
 }
-
-
 
 async function main() {
   addStyle()
@@ -390,7 +386,6 @@ async function main() {
     getAnswer(getQuestion())
   }
 }
-
 
 main().catch((e) => {
   console.log(e);
