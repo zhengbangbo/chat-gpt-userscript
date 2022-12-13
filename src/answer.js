@@ -1,5 +1,5 @@
 import { getAccessToken } from './token.js'
-import { GM_xmlhttpRequest } from '$'
+import { GM_xmlhttpRequest, GM_deleteValue } from '$'
 import { getUserscriptManager } from './user-manager.js'
 import { uuidv4 } from './uuid.js'
 import { containerShow, alertLogin } from './container.js'
@@ -16,7 +16,10 @@ export async function getAnswer(question, callback) {
   }
   function onloadend() {
     function finish() {
-      return callback("finish")
+      if (typeof callback === 'function') {
+        return callback("finish")
+
+      }
     }
     if (getUserscriptManager() === "Violentmonkey") {
       return function (event) {
@@ -45,7 +48,7 @@ export async function getAnswer(question, callback) {
     } else {
       return function () {
         finish()
-       }
+      }
     }
   }
   function isTokenExpired(text) {

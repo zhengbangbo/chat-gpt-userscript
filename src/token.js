@@ -1,4 +1,6 @@
-import { GM_setValue, GM_getValue } from '$'
+import { GM_setValue, GM_getValue, GM_xmlhttpRequest } from '$'
+import { isBlockedbyCloudflare } from './parse.js'
+import { alertLogin } from './container.js'
 
 export function getAccessToken() {
   return new Promise((resolve, rejcet) => {
@@ -7,6 +9,10 @@ export function getAccessToken() {
       GM_xmlhttpRequest({
         url: "https://chat.openai.com/api/auth/session",
         onload: function (response) {
+          if (isBlockedbyCloudflare(response.responseText)) {
+            alertLogin()
+            return
+          }
           const accessToken = JSON.parse(response.responseText).accessToken
           if (!accessToken) {
             rejcet("UNAUTHORIZED")
