@@ -2,7 +2,7 @@
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
 // @namespace          https://greasyfork.org/scripts/456077
-// @version            0.6.3
+// @version            0.6.4
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
@@ -222,8 +222,39 @@
   var monkeyWindow = window;
   var GM_info = /* @__PURE__ */ (() => monkeyWindow.GM_info)();
   var GM_setValue = /* @__PURE__ */ (() => monkeyWindow.GM_setValue)();
-  var GM_xmlhttpRequest$1 = /* @__PURE__ */ (() => monkeyWindow.GM_xmlhttpRequest)();
+  var GM_deleteValue = /* @__PURE__ */ (() => monkeyWindow.GM_deleteValue)();
+  var GM_xmlhttpRequest = /* @__PURE__ */ (() => monkeyWindow.GM_xmlhttpRequest)();
   var GM_getValue = /* @__PURE__ */ (() => monkeyWindow.GM_getValue)();
+  function isBlockedbyCloudflare(resp) {
+    try {
+      const html = new DOMParser().parseFromString(resp, "text/html");
+      const title = html.querySelector("title");
+      return title.innerText === "Just a moment...";
+    } catch (error) {
+      return false;
+    }
+  }
+  const container = document.createElement("div");
+  function getContainer() {
+    return container;
+  }
+  function initContainer() {
+    const container2 = getContainer();
+    container2.className = "chat-gpt-container";
+    container2.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
+  }
+  function containerShow(answer) {
+    const container2 = getContainer();
+    container2.innerHTML = '<p><span class="prefix">Chat GPT</span><pre></pre></p>';
+    container2.querySelector("pre").textContent = answer;
+  }
+  function containerAlert(htmlStr) {
+    const container2 = getContainer();
+    container2.innerHTML = htmlStr;
+  }
+  function alertLogin() {
+    containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>');
+  }
   function getAccessToken() {
     return new Promise((resolve, rejcet) => {
       let accessToken = GM_getValue("accessToken");
@@ -231,6 +262,10 @@
         GM_xmlhttpRequest({
           url: "https://chat.openai.com/api/auth/session",
           onload: function(response) {
+            if (isBlockedbyCloudflare(response.responseText)) {
+              alertLogin();
+              return;
+            }
             const accessToken2 = JSON.parse(response.responseText).accessToken;
             if (!accessToken2) {
               rejcet("UNAUTHORIZED");
@@ -265,27 +300,6 @@
     var uuid = s.join("");
     return uuid;
   }
-  const container = document.createElement("div");
-  function getContainer() {
-    return container;
-  }
-  function initContainer() {
-    const container2 = getContainer();
-    container2.className = "chat-gpt-container";
-    container2.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
-  }
-  function containerShow(answer) {
-    const container2 = getContainer();
-    container2.innerHTML = '<p><span class="prefix">Chat GPT</span><pre></pre></p>';
-    container2.querySelector("pre").textContent = answer;
-  }
-  function containerAlert(htmlStr) {
-    const container2 = getContainer();
-    container2.innerHTML = htmlStr;
-  }
-  function alertLogin() {
-    containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>');
-  }
   async function getAnswer(question, callback) {
     function responseType() {
       if (getUserscriptManager() === "Violentmonkey") {
@@ -296,7 +310,9 @@
     }
     function onloadend() {
       function finish() {
-        return callback("finish");
+        if (typeof callback === "function") {
+          return callback("finish");
+        }
       }
       if (getUserscriptManager() === "Violentmonkey") {
         return function(event) {
@@ -331,7 +347,7 @@
         return false;
       }
     }
-    function isBlockedbyCloudflare(resp) {
+    function isBlockedbyCloudflare2(resp) {
       try {
         const html = new DOMParser().parseFromString(resp, "text/html");
         const title = html.querySelector("title");
@@ -358,7 +374,7 @@
               alertLogin();
               return;
             }
-            if (isBlockedbyCloudflare(responseItem)) {
+            if (isBlockedbyCloudflare2(responseItem)) {
               GM_deleteValue("accessToken");
               alertLogin();
               return;
@@ -389,7 +405,7 @@
     }
     try {
       const accessToken = await getAccessToken();
-      GM_xmlhttpRequest$1({
+      GM_xmlhttpRequest({
         method: "POST",
         url: "https://chat.openai.com/backend-api/conversation",
         headers: {
