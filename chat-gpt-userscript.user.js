@@ -2,7 +2,7 @@
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
 // @namespace          https://greasyfork.org/scripts/456077
-// @version            0.6.1
+// @version            0.6.2
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
@@ -369,9 +369,6 @@
   function alertUnknowError() {
     containerAlert('<p>Oops, maybe it is a bug, please check or submit <a href="https://github.com/zhengbangbo/chat-gpt-userscript/issues" target="_blank">https://github.com/zhengbangbo/chat-gpt-userscript/issues</a>.</p>');
   }
-  function alertNetworkException() {
-    containerAlert("<p>Network exception, please refresh the page</p>");
-  }
   function getAccessToken() {
     return new Promise((resolve, rejcet) => {
       let accessToken = GM_getValue("accessToken");
@@ -438,8 +435,9 @@
     }
     function isBlockedbyCloudflare(resp) {
       try {
-        const html = new DOMParser.parseFromString(resp, "text/html");
-        return html !== void 0;
+        const html = new DOMParser().parseFromString(resp, "text/html");
+        const title = html.querySelector("title");
+        return title.innerText === "Just a moment...";
       } catch (error) {
         return false;
       }
@@ -462,7 +460,7 @@
               return;
             }
             if (isBlockedbyCloudflare(responseItem)) {
-              alertNetworkException();
+              alertLogin();
               return;
             }
             console.log("items: ", items);
