@@ -2,12 +2,12 @@
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
 // @namespace          https://greasyfork.org/scripts/456077
-// @version            0.6.4
+// @version            0.6.5
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
 // @license            MIT
-// @icon               https://www.google.com/s2/favicons?sz=64&domain=openai.com
+// @icon               https://github.com/zhengbangbo/oss/raw/main/logo/chat-gpt-userscript.png
 // @downloadURL        https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js
 // @updateURL          https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js
 // @match              https://*.google.com/search*
