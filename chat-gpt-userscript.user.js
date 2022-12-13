@@ -2,7 +2,7 @@
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
 // @namespace          https://greasyfork.org/scripts/456077
-// @version            0.6.2
+// @version            0.6.3
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
@@ -214,17 +214,45 @@
 // @grant              GM_xmlhttpRequest
 // ==/UserScript==
 
-(e=>{const t=document.createElement("style");t.dataset.source="vite-plugin-monkey",t.innerText=e,document.head.appendChild(t)})(".chat-gpt-container{max-width:369px;margin-bottom:30px;border-radius:8px;border:1px solid #dadce0;padding:15px;flex-basis:0;flex-grow:1;word-wrap:break-word;white-space:pre-wrap}.chat-gpt-container p{margin:0}.chat-gpt-container .prefix{font-weight:700}.chat-gpt-container .loading{color:#b6b8ba;animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}@keyframes pulse{0%,to{opacity:1}50%{opacity:.5}}.chat-gpt-container.sidebar-free{margin-left:60px;height:fit-content}.chat-gpt-container pre{white-space:pre-wrap;min-width:0;margin-bottom:0;line-height:20px}.chat-gpt-translate-button{border-radius:8px;border:1px solid #dadce0;padding:5px}.chat-gpt-translate-button:hover{color:#006494;transition:color .1s ease-out}");
+(e=>{const t=document.createElement("style");t.dataset.source="vite-plugin-monkey",t.innerText=e,document.head.appendChild(t)})(".chat-gpt-container{max-width:369px;margin-bottom:30px;border-radius:8px;border:1px solid #dadce0;padding:15px;flex-basis:0;flex-grow:1;word-wrap:break-word;white-space:pre-wrap}.chat-gpt-container p{margin:0}.chat-gpt-container .prefix{font-weight:700}.chat-gpt-container .loading{color:#b6b8ba;animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}@keyframes pulse{0%,to{opacity:1}50%{opacity:.5}}.chat-gpt-container.sidebar-free{margin-left:60px;height:fit-content}.chat-gpt-container pre{white-space:pre-wrap;min-width:0;margin-bottom:0;line-height:20px}.chat-gpt-translate-button{border-radius:8px;border:1px solid #dadce0;padding:5px}.chat-gpt-translate-button:hover{color:#006494;transition:color .1s ease-out}.chat-gpt-translate-button[disabled]{color:#eee}");
 
 (function() {
   "use strict";
-  const style = "";
+  const _default = "";
   var monkeyWindow = window;
   var GM_info = /* @__PURE__ */ (() => monkeyWindow.GM_info)();
   var GM_setValue = /* @__PURE__ */ (() => monkeyWindow.GM_setValue)();
-  var GM_deleteValue = /* @__PURE__ */ (() => monkeyWindow.GM_deleteValue)();
-  var GM_xmlhttpRequest = /* @__PURE__ */ (() => monkeyWindow.GM_xmlhttpRequest)();
+  var GM_xmlhttpRequest$1 = /* @__PURE__ */ (() => monkeyWindow.GM_xmlhttpRequest)();
   var GM_getValue = /* @__PURE__ */ (() => monkeyWindow.GM_getValue)();
+  function getAccessToken() {
+    return new Promise((resolve, rejcet) => {
+      let accessToken = GM_getValue("accessToken");
+      if (!accessToken) {
+        GM_xmlhttpRequest({
+          url: "https://chat.openai.com/api/auth/session",
+          onload: function(response) {
+            const accessToken2 = JSON.parse(response.responseText).accessToken;
+            if (!accessToken2) {
+              rejcet("UNAUTHORIZED");
+            }
+            GM_setValue("accessToken", accessToken2);
+            resolve(accessToken2);
+          },
+          onerror: function(error) {
+            rejcet(error);
+          },
+          ontimeout: () => {
+            console.log("getAccessToken timeout!");
+          }
+        });
+      } else {
+        resolve(accessToken);
+      }
+    });
+  }
+  function getUserscriptManager() {
+    return GM_info.scriptHandler;
+  }
   function uuidv4() {
     var s = [];
     var hexDigits = "0123456789abcdef";
@@ -241,8 +269,165 @@
   function getContainer() {
     return container;
   }
-  function getUserscriptManager() {
-    return GM_info.scriptHandler;
+  function initContainer() {
+    const container2 = getContainer();
+    container2.className = "chat-gpt-container";
+    container2.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
+  }
+  function containerShow(answer) {
+    const container2 = getContainer();
+    container2.innerHTML = '<p><span class="prefix">Chat GPT</span><pre></pre></p>';
+    container2.querySelector("pre").textContent = answer;
+  }
+  function containerAlert(htmlStr) {
+    const container2 = getContainer();
+    container2.innerHTML = htmlStr;
+  }
+  function alertLogin() {
+    containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>');
+  }
+  async function getAnswer(question, callback) {
+    function responseType() {
+      if (getUserscriptManager() === "Violentmonkey") {
+        return "text";
+      } else {
+        return "stream";
+      }
+    }
+    function onloadend() {
+      function finish() {
+        return callback("finish");
+      }
+      if (getUserscriptManager() === "Violentmonkey") {
+        return function(event) {
+          finish();
+          if (event.status === 401) {
+            GM_deleteValue("accessToken");
+            location.reload();
+          }
+          if (event.status === 403) {
+            GM_deleteValue("accessToken");
+            alertLogin();
+          }
+          if (event.status != 401 && event.status != 200) {
+            GM_deleteValue("accessToken");
+            alertLogin();
+          }
+          if (event.response) {
+            const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0];
+            containerShow(answer);
+          }
+        };
+      } else {
+        return function() {
+          finish();
+        };
+      }
+    }
+    function isTokenExpired(text) {
+      try {
+        return JSON.parse(text).detail.code === "token_expired";
+      } catch (error) {
+        return false;
+      }
+    }
+    function isBlockedbyCloudflare(resp) {
+      try {
+        const html = new DOMParser().parseFromString(resp, "text/html");
+        const title = html.querySelector("title");
+        return title.innerText === "Just a moment...";
+      } catch (error) {
+        return false;
+      }
+    }
+    function onloadstart() {
+      if (getUserscriptManager() === "Violentmonkey") {
+        return function() {
+        };
+      } else {
+        return function(stream) {
+          const reader = stream.response.getReader();
+          reader.read().then(function processText({ done, value }) {
+            if (done) {
+              return;
+            }
+            let responseItem = String.fromCharCode(...Array.from(value));
+            const items = responseItem.split("\n\n");
+            if (isTokenExpired(items[0])) {
+              GM_deleteValue("accessToken");
+              alertLogin();
+              return;
+            }
+            if (isBlockedbyCloudflare(responseItem)) {
+              GM_deleteValue("accessToken");
+              alertLogin();
+              return;
+            }
+            console.log("items: ", items);
+            if (items.length > 2) {
+              console.log("responseItem: ", responseItem);
+              const lastItem = items.slice(-3, -2)[0];
+              console.log("lastItem: ", lastItem);
+              if (lastItem.startsWith("data: [DONE]")) {
+                responseItem = items.slice(-4, -3)[0];
+              } else {
+                responseItem = lastItem;
+              }
+            }
+            if (responseItem.startsWith("data: {")) {
+              console.log("responseItem.slice(6): ", responseItem.slice(6));
+              const answer = JSON.parse(responseItem.slice(6)).message.content.parts[0];
+              containerShow(answer);
+            } else if (responseItem.startsWith("data: [DONE]")) {
+              console.log("receive [DONE]");
+              return;
+            }
+            return reader.read().then(processText);
+          });
+        };
+      }
+    }
+    try {
+      const accessToken = await getAccessToken();
+      GM_xmlhttpRequest$1({
+        method: "POST",
+        url: "https://chat.openai.com/backend-api/conversation",
+        headers: {
+          "Content-Type": "	application/json",
+          Authorization: `Bearer ${accessToken}`
+        },
+        responseType: responseType(),
+        data: JSON.stringify({
+          action: "next",
+          messages: [
+            {
+              id: uuidv4(),
+              role: "user",
+              content: {
+                content_type: "text",
+                parts: [question]
+              }
+            }
+          ],
+          model: "text-davinci-002-render",
+          parent_message_id: uuidv4()
+        }),
+        onloadstart: onloadstart(),
+        onloadend: onloadend(),
+        onerror: function(event) {
+          console.log("getAnswer onerror: ", event);
+        },
+        ontimeout: function(event) {
+          console.log("getAnswer ontimeout: ", event);
+        }
+      });
+    } catch (error) {
+      if (error === "UNAUTHORIZED") {
+        GM_deleteValue("accessToken");
+        alertLogin();
+      }
+      console.log("getAnswer error: ", error);
+    }
   }
   function getWebsite() {
     function configRequestImmediately(name) {
@@ -283,11 +468,6 @@
     }
   }
   function initUI() {
-    function initContainer() {
-      const container2 = getContainer();
-      container2.className = "chat-gpt-container";
-      container2.innerHTML = '<p class="loading">Waiting for ChatGPT response...</p>';
-    }
     function googleInjectContainer() {
       const container2 = getContainer();
       const siderbarContainer = document.getElementById("rhs");
@@ -322,6 +502,7 @@
       document.getElementsByClassName("lmt__textarea_container")[0].appendChild(button);
       button.addEventListener("click", function() {
         initContainer();
+        button.disabled = true;
         try {
           document.getElementsByClassName("lmt__raise_alternatives_placement")[0].insertBefore(container2, document.getElementsByClassName("lmt__translations_as_text")[0]);
         } catch {
@@ -329,7 +510,10 @@
         }
         let outlang = document.querySelectorAll("strong[data-testid='deepl-ui-tooltip-target']")[0].innerHTML;
         let question = "Translate the following paragraph into " + outlang + " and only " + outlang + "\n\n" + document.getElementById("source-dummydiv").innerHTML;
-        getAnswer(question);
+        getAnswer(question, (t) => {
+          console.log(t);
+          button.disabled = false;
+        });
       });
     }
     initContainer();
@@ -351,181 +535,6 @@
         break;
       default:
         alertUnknowError();
-    }
-  }
-  function containerShow(answer) {
-    const container2 = getContainer();
-    container2.innerHTML = '<p><span class="prefix">Chat GPT</span><pre></pre></p>';
-    container2.querySelector("pre").textContent = answer;
-  }
-  function containerAlert(htmlStr) {
-    const container2 = getContainer();
-    container2.innerHTML = htmlStr;
-  }
-  function alertLogin() {
-    GM_deleteValue("accessToken");
-    containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>');
-  }
-  function alertUnknowError() {
-    containerAlert('<p>Oops, maybe it is a bug, please check or submit <a href="https://github.com/zhengbangbo/chat-gpt-userscript/issues" target="_blank">https://github.com/zhengbangbo/chat-gpt-userscript/issues</a>.</p>');
-  }
-  function getAccessToken() {
-    return new Promise((resolve, rejcet) => {
-      let accessToken = GM_getValue("accessToken");
-      if (!accessToken) {
-        GM_xmlhttpRequest({
-          url: "https://chat.openai.com/api/auth/session",
-          onload: function(response) {
-            const accessToken2 = JSON.parse(response.responseText).accessToken;
-            if (!accessToken2) {
-              rejcet("UNAUTHORIZED");
-            }
-            GM_setValue("accessToken", accessToken2);
-            resolve(accessToken2);
-          },
-          onerror: function(error) {
-            rejcet(error);
-          },
-          ontimeout: () => {
-            console.log("getAccessToken timeout!");
-          }
-        });
-      } else {
-        resolve(accessToken);
-      }
-    });
-  }
-  async function getAnswer(question) {
-    function responseType() {
-      if (getUserscriptManager() === "Violentmonkey") {
-        return "text";
-      } else {
-        return "stream";
-      }
-    }
-    function onloadend() {
-      if (getUserscriptManager() === "Violentmonkey") {
-        return function(event) {
-          if (event.status === 401) {
-            GM_deleteValue("accessToken");
-            location.reload();
-          }
-          if (event.status === 403) {
-            alertLogin();
-          }
-          if (event.status != 401 && event.status != 200) {
-            alertLogin();
-          }
-          if (event.response) {
-            const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0];
-            containerShow(answer);
-          }
-        };
-      } else {
-        return function() {
-        };
-      }
-    }
-    function isTokenExpired(text) {
-      try {
-        return JSON.parse(text).detail.code === "token_expired";
-      } catch (error) {
-        return false;
-      }
-    }
-    function isBlockedbyCloudflare(resp) {
-      try {
-        const html = new DOMParser().parseFromString(resp, "text/html");
-        const title = html.querySelector("title");
-        return title.innerText === "Just a moment...";
-      } catch (error) {
-        return false;
-      }
-    }
-    function onloadstart() {
-      if (getUserscriptManager() === "Violentmonkey") {
-        return function() {
-        };
-      } else {
-        return function(stream) {
-          const reader = stream.response.getReader();
-          reader.read().then(function processText({ done, value }) {
-            if (done) {
-              return;
-            }
-            let responseItem = String.fromCharCode(...Array.from(value));
-            const items = responseItem.split("\n\n");
-            if (isTokenExpired(items[0])) {
-              alertLogin();
-              return;
-            }
-            if (isBlockedbyCloudflare(responseItem)) {
-              alertLogin();
-              return;
-            }
-            console.log("items: ", items);
-            if (items.length > 2) {
-              console.log("responseItem: ", responseItem);
-              const lastItem = items.slice(-3, -2)[0];
-              console.log("lastItem: ", lastItem);
-              if (lastItem.startsWith("data: [DONE]")) {
-                responseItem = items.slice(-4, -3)[0];
-              } else {
-                responseItem = lastItem;
-              }
-            }
-            if (responseItem.startsWith("data: {")) {
-              console.log("responseItem.slice(6): ", responseItem.slice(6));
-              const answer = JSON.parse(responseItem.slice(6)).message.content.parts[0];
-              containerShow(answer);
-            } else if (responseItem.startsWith("data: [DONE]")) {
-              console.log("receive [DONE]");
-              return;
-            }
-            return reader.read().then(processText);
-          });
-        };
-      }
-    }
-    try {
-      const accessToken = await getAccessToken();
-      GM_xmlhttpRequest({
-        method: "POST",
-        url: "https://chat.openai.com/backend-api/conversation",
-        headers: {
-          "Content-Type": "	application/json",
-          Authorization: `Bearer ${accessToken}`
-        },
-        responseType: responseType(),
-        data: JSON.stringify({
-          action: "next",
-          messages: [
-            {
-              id: uuidv4(),
-              role: "user",
-              content: {
-                content_type: "text",
-                parts: [question]
-              }
-            }
-          ],
-          model: "text-davinci-002-render",
-          parent_message_id: uuidv4()
-        }),
-        onloadstart: onloadstart(),
-        onloadend: onloadend(),
-        onerror: function(event) {
-          console.log("getAnswer onerror: ", event);
-        },
-        ontimeout: function(event) {
-          console.log("getAnswer ontimeout: ", event);
-        }
-      });
-    } catch (error) {
-      if (error === "UNAUTHORIZED") {
-        alertLogin();
-      }
-      console.log("getAccessToken error: ", error);
     }
   }
   async function main() {
