@@ -93,17 +93,40 @@ function initUI() {
     });
   }
 
+  function googleTopInjectContainer() {
+    GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
+    const container2 = getContainer();
+    const mainContainer = document.querySelector("#search")
+    if (mainContainer) {
+      mainContainer.prepend(container2);
+    }
+  }
+  function bingTopInjectContainer() {
+    GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
+    GM_addStyle('.chat-gpt-container{width: 70vw}')
+    const container2 = getContainer();
+    const mainBarContainer = document.querySelector("main");
+    mainBarContainer.prepend(container2);
+  }
+  function baiduTopInjectContainer() {
+    GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
+    const container2 = getContainer();
+    const siderbarContainer = document.querySelector("#content_left");
+    siderbarContainer.prepend(container2);
+  }
+  let position = GM_getValue("c_position", 1);
+
   initContainer()
 
   switch (getWebsite().name) {
     case 'google':
-      googleInjectContainer()
+      position ? googleInjectContainer() : googleTopInjectContainer();
       break
     case 'bing':
-      bingInjectContainer()
+      position ? bingInjectContainer() : bingTopInjectContainer();
       break
     case 'baidu':
-      baiduInjectContainer()
+      position ? baiduInjectContainer() : baiduTopInjectContainer();
       break
     case 'duckduckgo':
       duckduckgoInjectContainer()
@@ -116,9 +139,19 @@ function initUI() {
   }
 }
 
+function initMenu() {
+  let position_id = GM_registerMenuCommand("切换位置 - 侧边(1)/上方(0): " + GM_getValue("c_position", 1), position_switch, "M");
+
+  function position_switch() {
+     GM_unregisterMenuCommand(position_id);
+     GM_setValue("c_position", (GM_getValue("c_position", 0)+1) % 2);
+     position_id = GM_registerMenuCommand ("切换位置 - 侧边(1)/上方(0): " + GM_getValue("c_position", 1), position_switch, "M");
+  }
+}
 
 async function main() {
-  initUI()
+  initUI();
+  initMenu();
   if (getWebsite().type === "immediately") {
     getAnswer(getQuestion())
   }
