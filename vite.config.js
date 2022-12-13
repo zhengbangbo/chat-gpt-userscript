@@ -8,7 +8,7 @@ export default defineConfig({
     monkey({
       entry: 'src/main.js',
       userscript: {
-        icon: 'https://www.google.com/s2/favicons?sz=64&domain=openai.com',
+        icon: 'https://github.com/zhengbangbo/oss/raw/main/logo/chat-gpt-userscript.png',
         name: {
           '': 'chat-gpt-search-sidebar',
           "zh-CN": '搜索结果侧栏显示 ChatGPT 回答',
