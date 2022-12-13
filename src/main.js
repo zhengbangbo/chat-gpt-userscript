@@ -77,6 +77,7 @@ function initUI() {
     document.getElementsByClassName("lmt__textarea_container")[0].appendChild(button);
     button.addEventListener("click", function () {
       initContainer()
+      button.disabled = true
       try {
         document.getElementsByClassName("lmt__raise_alternatives_placement")[0].insertBefore(container, document.getElementsByClassName("lmt__translations_as_text")[0]);
       }
@@ -85,7 +86,10 @@ function initUI() {
       }
       let outlang = document.querySelectorAll("strong[data-testid='deepl-ui-tooltip-target']")[0].innerHTML
       let question = 'Translate the following paragraph into ' + outlang + ' and only ' + outlang + '\n\n' + document.getElementById('source-dummydiv').innerHTML
-      getAnswer(question)
+      getAnswer(question, (t) => {
+        console.log(t)
+        button.disabled = false
+      })
     });
   }
 

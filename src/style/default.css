@@ -57,3 +57,7 @@
   color: #006494;
   transition: color 100ms ease-out;
 }
+
+.chat-gpt-translate-button[disabled] {
+  color: #eeeeee
+}

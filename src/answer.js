@@ -4,7 +4,7 @@ import { getUserscriptManager } from './user-manager.js'
 import { uuidv4 } from './uuid.js'
 import { containerShow, alertLogin } from './container.js'
 
-export async function getAnswer(question) {
+export async function getAnswer(question, callback) {
   function responseType() {
     // violentmonkey don't support stream responseType
     // https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
@@ -15,8 +15,12 @@ export async function getAnswer(question) {
     }
   }
   function onloadend() {
+    function finish() {
+      return callback("finish")
+    }
     if (getUserscriptManager() === "Violentmonkey") {
       return function (event) {
+        finish()
         if (event.status === 401) {
           GM_deleteValue("accessToken")
           location.reload()
@@ -39,7 +43,9 @@ export async function getAnswer(question) {
         }
       }
     } else {
-      return function () { }
+      return function () {
+        finish()
+       }
     }
   }
   function isTokenExpired(text) {
