@@ -222,6 +222,8 @@ export default defineConfig({
           'GM_getValue',
           'GM_deleteValue',
           'GM_addStyle',
+          'GM_registerMenuCommand',
+          'GM_unregisterMenuCommand',
         ],
         namespace: 'https://greasyfork.org/scripts/456077',
         updateURL: 'https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js',
