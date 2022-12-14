@@ -6,12 +6,12 @@ import { containerShow, alertLogin } from './container.js'
 
 export async function getAnswer(question, callback) {
   function responseType() {
-    // violentmonkey don't support stream responseType
+    // Violentmonkey don't support stream responseType
     // https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
-    if (getUserscriptManager() === "Violentmonkey") {
-      return 'text'
-    } else {
+    if (getUserscriptManager() === "Tampermonkey") {
       return 'stream'
+    } else {
+      return 'text'
     }
   }
   function onloadend() {
@@ -21,12 +21,12 @@ export async function getAnswer(question, callback) {
 
       }
     }
-    if (getUserscriptManager() === "Violentmonkey") {
+    if (getUserscriptManager() !== "Tampermonkey") {
       return function (event) {
         finish()
         if (event.status === 401) {
           GM_deleteValue("accessToken")
-          location.reload()
+          alertLogin()
         }
         if (event.status === 403) {
           // alertNetworkException()
@@ -69,7 +69,7 @@ export async function getAnswer(question, callback) {
     }
   }
   function onloadstart() {
-    if (getUserscriptManager() === "Violentmonkey") {
+    if (getUserscriptManager() !== "Tampermonkey") {
       return function () { }
     } else {
       return function (stream) {
