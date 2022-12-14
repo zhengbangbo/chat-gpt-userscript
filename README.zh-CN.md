@@ -34,11 +34,12 @@
 | **Violentmonkey(*)**  |     OK     |         OK         |      OK     |      -     |
 | **Greasemonkey**      |      -     |          -         |      NG     |      -     |
 | **Userscripts**       |      -     |          -         |      -      |     NG     |
-| **ScriptCat(脚本猫)**  |     NG     |         NG         |      NG     |      -     |
+| **ScriptCat(*)**      |     OK     |         OK         |      OK     |      -     |
 
-*: ViolentMoney 无法逐字打印，因为它不支持 stream 响应类型[^vm].
+*: ViolentMoney 和 ScriptCat 无法逐字打印，因为不支持 stream 响应类型[^vm][^sc]。
 
 [^vm]: https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
+[^sc]: https://github.com/scriptscat/scriptcat/blob/88a6d4a3ad24bef64ba37035b02a50ad8ece8c38/src/types/main.d.ts#L20
 
 ## 贡献
 本项目现在使用 [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey) 构建，开发过程相关问题在[该项目的文档](https://github.com/lisonge/vite-plugin-monkey#some-note)中都有解答。

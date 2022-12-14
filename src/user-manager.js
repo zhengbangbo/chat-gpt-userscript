@@ -2,5 +2,10 @@ import { GM_info } from '$'
 
 export function getUserscriptManager() {
   // Greasemonkey Tampermonkey Violentmonkey
-  return GM_info.scriptHandler
+  try {
+    const userscriptManager = GM_info.scriptHandler
+    return userscriptManager
+  } catch (error) {
+    return 'other'
+  }
 }

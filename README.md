@@ -34,11 +34,12 @@ A userscript to display ChatGPT answer alongside
 | **Violentmonkey(*)**  |     OK     |         OK         |      OK     |      -     |
 | **Greasemonkey**      |      -     |          -         |      NG     |      -     |
 | **Userscripts**       |      -     |          -         |      -      |     NG     |
-| **ScriptCat(脚本猫)**  |     NG     |         NG         |      NG     |      -     |
+| **ScriptCat(*)**      |     OK     |         OK         |      OK     |      -     |
 
-*: Violentmonkey unable to print verbatim because it can't support stream responseType[^vm].
+*: ViolentMoney and ScriptCat cannot print verbatim because stream response types are not supported[^vm][^sc].
 
 [^vm]: https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
+[^sc]: https://github.com/scriptscat/scriptcat/blob/88a6d4a3ad24bef64ba37035b02a50ad8ece8c38/src/types/main.d.ts#L20
 
 ## Contribution
 This project is now built using [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey). Questions related to the development process are answered in [the documentation of the project](https://github.com/lisonge/vite-plugin-monkey#some-note).

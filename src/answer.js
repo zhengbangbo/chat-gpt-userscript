@@ -5,6 +5,7 @@ import { uuidv4 } from './uuid.js'
 import { containerShow, alertLogin } from './container.js'
 
 export async function getAnswer(question, callback) {
+  console.log("getAnswer");
   function responseType() {
     // Violentmonkey don't support stream responseType
     // https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
@@ -15,14 +16,33 @@ export async function getAnswer(question, callback) {
     }
   }
   function onloadend() {
+  }
+  function isTokenExpired(text) {
+    try {
+      return JSON.parse(text).detail.code === 'token_expired'
+    } catch (error) {
+      return false
+    }
+  }
+  function isBlockedbyCloudflare(resp) {
+    try {
+      const html = new DOMParser().parseFromString(resp, "text/html")
+      // cloudflare html be like: https://github.com/zhengbangbo/chat-gpt-userscript/blob/512892caabef2820a3dc3ddfbcf5464fc63c405a/parse.js
+      const title = html.querySelector('title')
+      return title.innerText === 'Just a moment...'
+    } catch (error) {
+      return false
+    }
+  }
+  function onload() {
     function finish() {
       if (typeof callback === 'function') {
         return callback("finish")
-
       }
     }
     if (getUserscriptManager() !== "Tampermonkey") {
       return function (event) {
+        console.log("event: ", event)
         finish()
         if (event.status === 401) {
           GM_deleteValue("accessToken")
@@ -51,26 +71,11 @@ export async function getAnswer(question, callback) {
       }
     }
   }
-  function isTokenExpired(text) {
-    try {
-      return JSON.parse(text).detail.code === 'token_expired'
-    } catch (error) {
-      return false
-    }
-  }
-  function isBlockedbyCloudflare(resp) {
-    try {
-      const html = new DOMParser().parseFromString(resp, "text/html")
-      // cloudflare html be like: https://github.com/zhengbangbo/chat-gpt-userscript/blob/512892caabef2820a3dc3ddfbcf5464fc63c405a/parse.js
-      const title = html.querySelector('title')
-      return title.innerText === 'Just a moment...'
-    } catch (error) {
-      return false
-    }
-  }
   function onloadstart() {
     if (getUserscriptManager() !== "Tampermonkey") {
-      return function () { }
+      return function (response) {
+        console.log("onloadstart",response);
+      }
     } else {
       return function (stream) {
         const reader = stream.response.getReader();
@@ -146,6 +151,7 @@ export async function getAnswer(question, callback) {
       }),
       onloadstart: onloadstart(),
       onloadend: onloadend(),
+      onload: onload(),
       onerror: function (event) {
         console.log("getAnswer onerror: ", event)
       },
