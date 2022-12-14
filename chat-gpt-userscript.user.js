@@ -2,7 +2,7 @@
 // @name               chat-gpt-search-sidebar
 // @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
 // @namespace          https://greasyfork.org/scripts/456077
-// @version            0.6.5
+// @version            0.7.0
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
 // @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)
 // @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
@@ -210,7 +210,9 @@
 // @grant              GM_deleteValue
 // @grant              GM_getValue
 // @grant              GM_info
+// @grant              GM_registerMenuCommand
 // @grant              GM_setValue
+// @grant              GM_unregisterMenuCommand
 // @grant              GM_xmlhttpRequest
 // ==/UserScript==
 
@@ -218,11 +220,13 @@
 
 (function() {
   "use strict";
-  const _default = "";
   var monkeyWindow = window;
   var GM_info = /* @__PURE__ */ (() => monkeyWindow.GM_info)();
   var GM_setValue = /* @__PURE__ */ (() => monkeyWindow.GM_setValue)();
   var GM_deleteValue = /* @__PURE__ */ (() => monkeyWindow.GM_deleteValue)();
+  var GM_addStyle = /* @__PURE__ */ (() => monkeyWindow.GM_addStyle)();
+  var GM_registerMenuCommand = /* @__PURE__ */ (() => monkeyWindow.GM_registerMenuCommand)();
+  var GM_unregisterMenuCommand = /* @__PURE__ */ (() => monkeyWindow.GM_unregisterMenuCommand)();
   var GM_xmlhttpRequest = /* @__PURE__ */ (() => monkeyWindow.GM_xmlhttpRequest)();
   var GM_getValue = /* @__PURE__ */ (() => monkeyWindow.GM_getValue)();
   function isBlockedbyCloudflare(resp) {
@@ -230,6 +234,13 @@
       const html = new DOMParser().parseFromString(resp, "text/html");
       const title = html.querySelector("title");
       return title.innerText === "Just a moment...";
+    } catch (error) {
+      return false;
+    }
+  }
+  function isTokenExpired(text) {
+    try {
+      return JSON.parse(text).detail.code === "token_expired";
     } catch (error) {
       return false;
     }
@@ -254,6 +265,9 @@
   }
   function alertLogin() {
     containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>');
+  }
+  function removeAccessToken() {
+    GM_deleteValue("accessToken");
   }
   function getAccessToken() {
     return new Promise((resolve, rejcet) => {
@@ -306,30 +320,11 @@
     return uuid;
   }
   async function getAnswer(question, callback) {
-    console.log("getAnswer");
     function responseType() {
       if (getUserscriptManager() === "Tampermonkey") {
         return "stream";
       } else {
         return "text";
-      }
-    }
-    function onloadend() {
-    }
-    function isTokenExpired(text) {
-      try {
-        return JSON.parse(text).detail.code === "token_expired";
-      } catch (error) {
-        return false;
-      }
-    }
-    function isBlockedbyCloudflare2(resp) {
-      try {
-        const html = new DOMParser().parseFromString(resp, "text/html");
-        const title = html.querySelector("title");
-        return title.innerText === "Just a moment...";
-      } catch (error) {
-        return false;
       }
     }
     function onload() {
@@ -340,18 +335,17 @@
       }
       if (getUserscriptManager() !== "Tampermonkey") {
         return function(event) {
-          console.log("event: ", event);
           finish();
           if (event.status === 401) {
-            GM_deleteValue("accessToken");
+            removeAccessToken();
             alertLogin();
           }
           if (event.status === 403) {
-            GM_deleteValue("accessToken");
+            removeAccessToken();
             alertLogin();
           }
           if (event.status != 401 && event.status != 200) {
-            GM_deleteValue("accessToken");
+            removeAccessToken();
             alertLogin();
           }
           if (event.response) {
@@ -366,11 +360,7 @@
       }
     }
     function onloadstart() {
-      if (getUserscriptManager() !== "Tampermonkey") {
-        return function(response) {
-          console.log("onloadstart", response);
-        };
-      } else {
+      if (getUserscriptManager() === "Tampermonkey") {
         return function(stream) {
           const reader = stream.response.getReader();
           reader.read().then(function processText({ done, value }) {
@@ -380,20 +370,17 @@
             let responseItem = String.fromCharCode(...Array.from(value));
             const items = responseItem.split("\n\n");
             if (isTokenExpired(items[0])) {
-              GM_deleteValue("accessToken");
+              removeAccessToken();
               alertLogin();
               return;
             }
-            if (isBlockedbyCloudflare2(responseItem)) {
-              GM_deleteValue("accessToken");
+            if (isBlockedbyCloudflare(responseItem)) {
+              removeAccessToken();
               alertLogin();
               return;
             }
-            console.log("items: ", items);
             if (items.length > 2) {
-              console.log("responseItem: ", responseItem);
               const lastItem = items.slice(-3, -2)[0];
-              console.log("lastItem: ", lastItem);
               if (lastItem.startsWith("data: [DONE]")) {
                 responseItem = items.slice(-4, -3)[0];
               } else {
@@ -401,11 +388,9 @@
               }
             }
             if (responseItem.startsWith("data: {")) {
-              console.log("responseItem.slice(6): ", responseItem.slice(6));
               const answer = JSON.parse(responseItem.slice(6)).message.content.parts[0];
               containerShow(answer);
             } else if (responseItem.startsWith("data: [DONE]")) {
-              console.log("receive [DONE]");
               return;
             }
             return reader.read().then(processText);
@@ -439,23 +424,23 @@
           parent_message_id: uuidv4()
         }),
         onloadstart: onloadstart(),
-        onloadend: onloadend(),
         onload: onload(),
         onerror: function(event) {
-          console.log("getAnswer onerror: ", event);
+          console.error("getAnswer error: ", event);
         },
         ontimeout: function(event) {
-          console.log("getAnswer ontimeout: ", event);
+          console.error("getAnswer timeout: ", event);
         }
       });
     } catch (error) {
       if (error === "UNAUTHORIZED") {
-        GM_deleteValue("accessToken");
+        removeAccessToken();
         alertLogin();
       }
-      console.log("getAnswer error: ", error);
+      console.error("getAnswer error: ", error);
     }
   }
+  const _default = "";
   function getWebsite() {
     function configRequestImmediately(name) {
       return {
@@ -494,26 +479,56 @@
         return new URL(window.location.href).searchParams.get("q");
     }
   }
+  function getPosition() {
+    return GM_getValue("containerPosition", 1);
+  }
+  function setPosition(newPosition) {
+    GM_setValue("containerPosition", newPosition);
+  }
   function initUI() {
     function googleInjectContainer() {
-      const container2 = getContainer();
-      const siderbarContainer = document.getElementById("rhs");
-      if (siderbarContainer) {
-        siderbarContainer.prepend(container2);
+      if (getPosition() === 1) {
+        const container2 = getContainer();
+        const siderbarContainer = document.getElementById("rhs");
+        if (siderbarContainer) {
+          siderbarContainer.prepend(container2);
+        } else {
+          container2.classList.add("sidebar-free");
+          document.getElementById("rcnt").appendChild(container2);
+        }
       } else {
-        container2.classList.add("sidebar-free");
-        document.getElementById("rcnt").appendChild(container2);
+        GM_addStyle(".chat-gpt-container{max-width: 100%!important}");
+        const container2 = getContainer();
+        const mainContainer = document.querySelector("#search");
+        if (mainContainer) {
+          mainContainer.prepend(container2);
+        }
       }
     }
     function bingInjectContainer() {
-      const container2 = getContainer();
-      const siderbarContainer = document.getElementById("b_context");
-      siderbarContainer.prepend(container2);
+      if (getPosition() === 1) {
+        const container2 = getContainer();
+        const siderbarContainer = document.getElementById("b_context");
+        siderbarContainer.prepend(container2);
+      } else {
+        GM_addStyle(".chat-gpt-container{max-width: 100%!important}");
+        GM_addStyle(".chat-gpt-container{width: 70vw}");
+        const container2 = getContainer();
+        const mainBarContainer = document.querySelector("main");
+        mainBarContainer.prepend(container2);
+      }
     }
     function baiduInjectContainer() {
-      const container2 = getContainer();
-      const siderbarContainer = document.getElementById("content_right");
-      siderbarContainer.prepend(container2);
+      if (getPosition() === 1) {
+        const container2 = getContainer();
+        const siderbarContainer = document.getElementById("content_right");
+        siderbarContainer.prepend(container2);
+      } else {
+        GM_addStyle(".chat-gpt-container{max-width: 100%!important}");
+        const container2 = getContainer();
+        const siderbarContainer = document.querySelector("#content_left");
+        siderbarContainer.prepend(container2);
+      }
     }
     function duckduckgoInjectContainer() {
       const container2 = getContainer();
@@ -564,8 +579,18 @@
         alertUnknowError();
     }
   }
+  function initMenu() {
+    let position_id = GM_registerMenuCommand("Container Position - Side(1)/Top(0): " + getPosition(), position_switch, "M");
+    function position_switch() {
+      GM_unregisterMenuCommand(position_id);
+      setPosition((getPosition() + 1) % 2);
+      position_id = GM_registerMenuCommand("Container Position - Side(1)/Top(0): " + getPosition(), position_switch, "M");
+      location.reload();
+    }
+  }
   async function main() {
     initUI();
+    initMenu();
     if (getWebsite().type === "immediately") {
       getAnswer(getQuestion());
     }
