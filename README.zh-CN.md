@@ -10,14 +10,32 @@
 
 [English Version](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/README.md)
 
-> 如果你有任何 BUG 反馈或想要提交 PR，欢迎前往 [GitHub](https://github.com/zhengbangbo/chat-gpt-userscript)
-
 在搜索引擎和翻译器旁显示ChatGPT回答的油猴脚本
 - 搜索引擎 ([Google](https://www.google.com/search?q=chatgpt)/[Bing](https://www.bing.com/search?q=who+am+i)/[Baidu](https://www.baidu.com/s?wd=Where%20am%20I%20from%3F)/[DuckDuckGo](https://duckduckgo.com/?q=Where+am+I+going%3F))
 - 翻译器 ([DeepL](https://www.deepl.com/translator#zh/en/%E5%9C%A8%E5%B9%B3%E5%9D%A6%E7%9A%84%E9%81%93%E8%B7%AF%E4%B8%8A%E6%9B%B2%E6%8A%98%E5%89%8D%E8%A1%8C))
 
-![screenshot.jpg](https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/screenshot.jpg)
-![screenshot2.png](https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/screenshot2.png)
+<table>
+    <tr>
+        <td>搜索引擎旁边
+        </td>
+        <td>DeepL
+        </td>
+    </tr>
+    <tr>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example1.png width=600/></td>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example2.png width=600/></td>
+    </tr>
+    <tr>
+        <td>搜索引擎顶部
+        </td>
+        <td>修改容器位置方法(仅搜索引擎可用)
+        </td>
+    </tr>
+    <tr>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example3.png width=600/></td>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example4.png width=600/></td>
+    </tr>
+</table>
 
 ## 安装
 
@@ -44,8 +62,14 @@
 ## 贡献
 本项目现在使用 [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey) 构建，开发过程相关问题在[该项目的文档](https://github.com/lisonge/vite-plugin-monkey#some-note)中都有解答。
 
+```
+pnpm i
+pnpm dev
+```
+
 ## 致谢
 
 - 本项目受 [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension) 启发。
 - 感谢 [@duck123ducker](https://github.com/duck123ducker) 贡献的对 DeepL 翻译器的支持([#9](https://github.com/zhengbangbo/chat-gpt-userscript/pull/9)).
 - 感谢 [bigonion](https://greasyfork.org/users/827969)，本项目接收处理 stream 类型数据部分借鉴了 [chatGPT tools Plus ++](https://greasyfork.org/scripts/456131/code?version=1127217)。
+- 感谢 [@devinmugen](https://github.com/devinmugen) 贡献的搜索页面顶部模式([#13](https://github.com/zhengbangbo/chat-gpt-userscript/pull/13)).

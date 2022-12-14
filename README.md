@@ -10,14 +10,32 @@
 
 [中文版](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/README.zh-CN.md)
 
-> If you have any BUG feedback or would like to submit a PR, please go to [GitHub](https://github.com/zhengbangbo/chat-gpt-userscript).
-
-A userscript to display ChatGPT answer alongside
+A [Userscript](https://en.wikipedia.org/wiki/Userscript)(monkeyscript) to display ChatGPT answer alongside
 - Search Engine ([Google](https://www.google.com/search?q=chatgpt)/[Bing](https://www.bing.com/search?q=who+am+i)/[Baidu](https://www.baidu.com/s?wd=Where%20am%20I%20from%3F)/[DuckDuckGo](https://duckduckgo.com/?q=Where+am+I+going%3F))
 - Translator ([DeepL](https://www.deepl.com/translator#zh/en/%E5%9C%A8%E5%B9%B3%E5%9D%A6%E7%9A%84%E9%81%93%E8%B7%AF%E4%B8%8A%E6%9B%B2%E6%8A%98%E5%89%8D%E8%A1%8C))
 
-![screenshot.jpg](https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/screenshot.jpg)
-![screenshot2.png](https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/screenshot2.png)
+<table>
+    <tr>
+        <td>Search Engine Side
+        </td>
+        <td>DeepL
+        </td>
+    </tr>
+    <tr>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example1.png width=600/></td>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example2.png width=600/></td>
+    </tr>
+    <tr>
+        <td>Search Engine Top
+        </td>
+        <td>How to change the container position(Only for Search Engine)
+        </td>
+    </tr>
+    <tr>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example3.png width=600/></td>
+        <td><img src=https://github.com/zhengbangbo/chat-gpt-userscript/raw/main/img/example4.png width=600/></td>
+    </tr>
+</table>
 
 ## Installation
 
@@ -44,8 +62,14 @@ A userscript to display ChatGPT answer alongside
 ## Contribution
 This project is now built using [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey). Questions related to the development process are answered in [the documentation of the project](https://github.com/lisonge/vite-plugin-monkey#some-note).
 
+```
+pnpm i
+pnpm dev
+```
+
 ## Credits
 
 - This project is inspired by [wong2/chat-gpt-google-extension](https://github.com/wong2/chat-gpt-google-extension).
 - Thanks to [@duck123ducker](https://github.com/duck123ducker) for contribute the support of deepl translator([#9](https://github.com/zhengbangbo/chat-gpt-userscript/pull/9)).
 - Thanks to [bigonion](https://greasyfork.org/users/827969), the receiving stream type data part of the project draws on [chatGPT tools Plus ++](https://greasyfork.org/scripts/456131/code?version=1127217).
+- Thanks to [@devinmugen](https://github.com/devinmugen) for contribute to the top mode of the search page([#13](https://github.com/zhengbangbo/chat-gpt-userscript/pull/13)).
