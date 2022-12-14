@@ -1,6 +1,7 @@
-import './style/default.css'
+import { GM_addStyle, GM_getValue, GM_registerMenuCommand, GM_setValue, GM_unregisterMenuCommand } from '$'
 import { getAnswer } from './answer.js'
 import { getContainer, initContainer } from './container.js'
+import './style/default.css'
 
 function getWebsite() {
   function configRequestImmediately(name) {
@@ -42,26 +43,59 @@ function getQuestion() {
   }
 }
 
+function getPosition() {
+  return GM_getValue('containerPosition', 1)
+}
+function setPosition(newPosition) {
+  GM_setValue('containerPosition', newPosition)
+}
+
 function initUI() {
   function googleInjectContainer() {
-    const container = getContainer()
-    const siderbarContainer = document.getElementById("rhs");
-    if (siderbarContainer) {
-      siderbarContainer.prepend(container);
+    if (getPosition() === 1) {
+      // side
+      const container = getContainer()
+      const siderbarContainer = document.getElementById("rhs");
+      if (siderbarContainer) {
+        siderbarContainer.prepend(container);
+      } else {
+        container.classList.add("sidebar-free");
+        document.getElementById("rcnt").appendChild(container);
+      }
     } else {
-      container.classList.add("sidebar-free");
-      document.getElementById("rcnt").appendChild(container);
+      GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
+      const container2 = getContainer();
+      const mainContainer = document.querySelector("#search")
+      if (mainContainer) {
+        mainContainer.prepend(container2);
+      }
     }
   }
   function bingInjectContainer() {
-    const container = getContainer()
-    const siderbarContainer = document.getElementById("b_context");
-    siderbarContainer.prepend(container);
+    if (getPosition() === 1) {
+      // side
+      const container = getContainer()
+      const siderbarContainer = document.getElementById("b_context");
+      siderbarContainer.prepend(container);
+    } else {
+      GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
+      GM_addStyle('.chat-gpt-container{width: 70vw}')
+      const container2 = getContainer();
+      const mainBarContainer = document.querySelector("main");
+      mainBarContainer.prepend(container2);
+    }
   }
   function baiduInjectContainer() {
-    const container = getContainer()
-    const siderbarContainer = document.getElementById("content_right");
-    siderbarContainer.prepend(container);
+    if (getPosition() === 1) {
+      const container = getContainer()
+      const siderbarContainer = document.getElementById("content_right");
+      siderbarContainer.prepend(container);
+    } else {
+      GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
+      const container2 = getContainer();
+      const siderbarContainer = document.querySelector("#content_left");
+      siderbarContainer.prepend(container2);
+    }
   }
   function duckduckgoInjectContainer() {
     const container = getContainer()
@@ -93,40 +127,17 @@ function initUI() {
     });
   }
 
-  function googleTopInjectContainer() {
-    GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
-    const container2 = getContainer();
-    const mainContainer = document.querySelector("#search")
-    if (mainContainer) {
-      mainContainer.prepend(container2);
-    }
-  }
-  function bingTopInjectContainer() {
-    GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
-    GM_addStyle('.chat-gpt-container{width: 70vw}')
-    const container2 = getContainer();
-    const mainBarContainer = document.querySelector("main");
-    mainBarContainer.prepend(container2);
-  }
-  function baiduTopInjectContainer() {
-    GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
-    const container2 = getContainer();
-    const siderbarContainer = document.querySelector("#content_left");
-    siderbarContainer.prepend(container2);
-  }
-  let position = GM_getValue("c_position", 1);
-
   initContainer()
 
   switch (getWebsite().name) {
     case 'google':
-      position ? googleInjectContainer() : googleTopInjectContainer();
+      googleInjectContainer()
       break
     case 'bing':
-      position ? bingInjectContainer() : bingTopInjectContainer();
+      bingInjectContainer()
       break
     case 'baidu':
-      position ? baiduInjectContainer() : baiduTopInjectContainer();
+      baiduInjectContainer()
       break
     case 'duckduckgo':
       duckduckgoInjectContainer()
@@ -140,12 +151,13 @@ function initUI() {
 }
 
 function initMenu() {
-  let position_id = GM_registerMenuCommand("切换位置 - 侧边(1)/上方(0): " + GM_getValue("c_position", 1), position_switch, "M");
+  let position_id = GM_registerMenuCommand("Container Position - Side(1)/Top(0): " + getPosition(), position_switch, "M");
 
   function position_switch() {
-     GM_unregisterMenuCommand(position_id);
-     GM_setValue("c_position", (GM_getValue("c_position", 0)+1) % 2);
-     position_id = GM_registerMenuCommand ("切换位置 - 侧边(1)/上方(0): " + GM_getValue("c_position", 1), position_switch, "M");
+    GM_unregisterMenuCommand(position_id);
+    setPosition((getPosition() + 1) % 2)
+    position_id = GM_registerMenuCommand("Container Position - Side(1)/Top(0): " + getPosition(), position_switch, "M");
+    location.reload()
   }
 }
 
