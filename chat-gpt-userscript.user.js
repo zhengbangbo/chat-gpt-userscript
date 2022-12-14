@@ -286,7 +286,12 @@
     });
   }
   function getUserscriptManager() {
-    return GM_info.scriptHandler;
+    try {
+      const userscriptManager = GM_info.scriptHandler;
+      return userscriptManager;
+    } catch (error) {
+      return "other";
+    }
   }
   function uuidv4() {
     var s = [];
@@ -301,25 +306,45 @@
     return uuid;
   }
   async function getAnswer(question, callback) {
+    console.log("getAnswer");
     function responseType() {
-      if (getUserscriptManager() === "Violentmonkey") {
-        return "text";
-      } else {
+      if (getUserscriptManager() === "Tampermonkey") {
         return "stream";
+      } else {
+        return "text";
       }
     }
     function onloadend() {
+    }
+    function isTokenExpired(text) {
+      try {
+        return JSON.parse(text).detail.code === "token_expired";
+      } catch (error) {
+        return false;
+      }
+    }
+    function isBlockedbyCloudflare2(resp) {
+      try {
+        const html = new DOMParser().parseFromString(resp, "text/html");
+        const title = html.querySelector("title");
+        return title.innerText === "Just a moment...";
+      } catch (error) {
+        return false;
+      }
+    }
+    function onload() {
       function finish() {
         if (typeof callback === "function") {
           return callback("finish");
         }
       }
-      if (getUserscriptManager() === "Violentmonkey") {
+      if (getUserscriptManager() !== "Tampermonkey") {
         return function(event) {
+          console.log("event: ", event);
           finish();
           if (event.status === 401) {
             GM_deleteValue("accessToken");
-            location.reload();
+            alertLogin();
           }
           if (event.status === 403) {
             GM_deleteValue("accessToken");
@@ -340,25 +365,10 @@
         };
       }
     }
-    function isTokenExpired(text) {
-      try {
-        return JSON.parse(text).detail.code === "token_expired";
-      } catch (error) {
-        return false;
-      }
-    }
-    function isBlockedbyCloudflare2(resp) {
-      try {
-        const html = new DOMParser().parseFromString(resp, "text/html");
-        const title = html.querySelector("title");
-        return title.innerText === "Just a moment...";
-      } catch (error) {
-        return false;
-      }
-    }
     function onloadstart() {
-      if (getUserscriptManager() === "Violentmonkey") {
-        return function() {
+      if (getUserscriptManager() !== "Tampermonkey") {
+        return function(response) {
+          console.log("onloadstart", response);
         };
       } else {
         return function(stream) {
@@ -430,6 +440,7 @@
         }),
         onloadstart: onloadstart(),
         onloadend: onloadend(),
+        onload: onload(),
         onerror: function(event) {
           console.log("getAnswer onerror: ", event);
         },
