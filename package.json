@@ -1,7 +1,7 @@
 {
-	"name": "chat-gpt-userscript",
+  "name": "chat-gpt-userscript",
   "private": true,
-  "version": "0.6.5",
+  "version": "0.7.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,9 +9,9 @@
     "preview": "vite preview",
     "test": "vitest"
   },
-	"devDependencies": {
-		"vite": "^4.0.0",
-		"vitest": "^0.25.7",
-		"vite-plugin-monkey": "^2.10.0"
-	}
+  "devDependencies": {
+    "vite": "^4.0.0",
+    "vitest": "^0.25.7",
+    "vite-plugin-monkey": "^2.10.0"
+  }
 }
