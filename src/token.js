@@ -1,6 +1,10 @@
-import { GM_setValue, GM_getValue, GM_xmlhttpRequest } from '$'
+import { GM_setValue, GM_getValue, GM_deleteValue, GM_xmlhttpRequest } from '$'
 import { isBlockedbyCloudflare } from './parse.js'
 import { alertLogin } from './container.js'
+
+export function removeAccessToken() {
+  GM_deleteValue("accessToken")
+}
 
 export function getAccessToken() {
   return new Promise((resolve, rejcet) => {

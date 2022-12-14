@@ -1,11 +1,11 @@
-import { getAccessToken } from './token.js'
-import { GM_xmlhttpRequest, GM_deleteValue } from '$'
+import { getAccessToken, removeAccessToken } from './token.js'
+import { GM_xmlhttpRequest } from '$'
 import { getUserscriptManager } from './user-manager.js'
 import { uuidv4 } from './uuid.js'
 import { containerShow, alertLogin } from './container.js'
+import { isTokenExpired, isBlockedbyCloudflare } from './parse.js'
 
 export async function getAnswer(question, callback) {
-  console.log("getAnswer");
   function responseType() {
     // Violentmonkey don't support stream responseType
     // https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
@@ -13,25 +13,6 @@ export async function getAnswer(question, callback) {
       return 'stream'
     } else {
       return 'text'
-    }
-  }
-  function onloadend() {
-  }
-  function isTokenExpired(text) {
-    try {
-      return JSON.parse(text).detail.code === 'token_expired'
-    } catch (error) {
-      return false
-    }
-  }
-  function isBlockedbyCloudflare(resp) {
-    try {
-      const html = new DOMParser().parseFromString(resp, "text/html")
-      // cloudflare html be like: https://github.com/zhengbangbo/chat-gpt-userscript/blob/512892caabef2820a3dc3ddfbcf5464fc63c405a/parse.js
-      const title = html.querySelector('title')
-      return title.innerText === 'Just a moment...'
-    } catch (error) {
-      return false
     }
   }
   function onload() {
@@ -42,22 +23,21 @@ export async function getAnswer(question, callback) {
     }
     if (getUserscriptManager() !== "Tampermonkey") {
       return function (event) {
-        console.log("event: ", event)
         finish()
         if (event.status === 401) {
-          GM_deleteValue("accessToken")
+          removeAccessToken()
           alertLogin()
         }
         if (event.status === 403) {
           // alertNetworkException()
           // maybe feel better
-          GM_deleteValue("accessToken")
+          removeAccessToken()
           alertLogin()
         }
         if (event.status != 401 && event.status != 200) {
           // alertUnknowError()
           // too...
-          GM_deleteValue("accessToken")
+          removeAccessToken()
           alertLogin()
         }
         if (event.response) {
@@ -72,11 +52,7 @@ export async function getAnswer(question, callback) {
     }
   }
   function onloadstart() {
-    if (getUserscriptManager() !== "Tampermonkey") {
-      return function (response) {
-        console.log("onloadstart",response);
-      }
-    } else {
+    if (getUserscriptManager() === "Tampermonkey") {
       return function (stream) {
         const reader = stream.response.getReader();
         reader.read().then(function processText({ done, value }) {
@@ -86,22 +62,19 @@ export async function getAnswer(question, callback) {
           let responseItem = String.fromCharCode(...Array.from(value))
           const items = responseItem.split('\n\n')
           if (isTokenExpired(items[0])) {
-            GM_deleteValue("accessToken")
+            removeAccessToken()
             alertLogin()
             return
           }
           if (isBlockedbyCloudflare(responseItem)) {
-            GM_deleteValue("accessToken")
+            removeAccessToken()
             alertLogin()
             return
           }
-          console.log("items: ", items)
           // Sometimes receive more than one message at a time.
           // Pick the last item
           if (items.length > 2) {
-            console.log("responseItem: ", responseItem);
             const lastItem = items.slice(-3, -2)[0]
-            console.log("lastItem: ", lastItem);
             if (lastItem.startsWith('data: [DONE]')) {
               responseItem = items.slice(-4, -3)[0]
             } else {
@@ -112,11 +85,9 @@ export async function getAnswer(question, callback) {
           // data: {"message": {"id": "62f92567-4ce0-4fe3-800f-3d5b82aa0e4d", "role": "assistant", "user": null, "create_time": null, "update_time": null, "content": {"content_type": "text", "parts": ["Pro"]}, "end_turn": null, "weight": 1.0, "metadata": {}, "recipient": "all"}, "conversation_id": "5d8777ca-cd79-4756-857e-c5c21339f57c", "error": null}
           // data: [DONE]
           if (responseItem.startsWith('data: {')) {
-            console.log("responseItem.slice(6): ", responseItem.slice(6));
             const answer = JSON.parse(responseItem.slice(6)).message.content.parts[0]
             containerShow(answer)
           } else if (responseItem.startsWith('data: [DONE]')) {
-            console.log("receive [DONE]")
             return
           }
           return reader.read().then(processText);
@@ -150,21 +121,19 @@ export async function getAnswer(question, callback) {
         parent_message_id: uuidv4(),
       }),
       onloadstart: onloadstart(),
-      onloadend: onloadend(),
       onload: onload(),
       onerror: function (event) {
-        console.log("getAnswer onerror: ", event)
+        console.error("getAnswer error: ", event)
       },
       ontimeout: function (event) {
-        console.log("getAnswer ontimeout: ", event)
+        console.error("getAnswer timeout: ", event)
       }
     })
   } catch (error) {
     if (error === "UNAUTHORIZED") {
-      GM_deleteValue("accessToken")
+      removeAccessToken()
       alertLogin()
     }
-    console.log("getAnswer error: ", error)
+    console.error("getAnswer error: ", error)
   }
-
 }

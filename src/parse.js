@@ -8,3 +8,11 @@ export function isBlockedbyCloudflare(resp) {
     return false
   }
 }
+
+export function isTokenExpired(text) {
+  try {
+    return JSON.parse(text).detail.code === 'token_expired'
+  } catch (error) {
+    return false
+  }
+}
