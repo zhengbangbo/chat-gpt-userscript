@@ -6,6 +6,7 @@
 [![Issues](https://img.shields.io/github/issues/zhengbangbo/chat-gpt-userscript)](https://github.com/zhengbangbo/chat-gpt-userscript/issues)
 [![PR](https://img.shields.io/github/issues-pr/zhengbangbo/chat-gpt-userscript)](https://github.com/zhengbangbo/chat-gpt-userscript/pulls)
 [![license](https://img.shields.io/github/license/zhengbangbo/chat-gpt-userscript?color=blue)](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fzhengbangbo%2Fchat-gpt-userscript.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fzhengbangbo%2Fchat-gpt-userscript?ref=badge_shield)
 [![](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://chat.imzbb.cc)
 
 [中文版](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/README.zh-CN.md)
@@ -73,3 +74,7 @@ pnpm dev
 - Thanks to [@duck123ducker](https://github.com/duck123ducker) for contribute the support of deepl translator([#9](https://github.com/zhengbangbo/chat-gpt-userscript/pull/9)).
 - Thanks to [bigonion](https://greasyfork.org/users/827969), the receiving stream type data part of the project draws on [chatGPT tools Plus ++](https://greasyfork.org/scripts/456131/code?version=1127217).
 - Thanks to [@devinmugen](https://github.com/devinmugen) for contribute to the top mode of the search page([#13](https://github.com/zhengbangbo/chat-gpt-userscript/pull/13)).
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fzhengbangbo%2Fchat-gpt-userscript.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fzhengbangbo%2Fchat-gpt-userscript?ref=badge_large)
