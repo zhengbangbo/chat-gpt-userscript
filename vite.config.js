@@ -214,7 +214,7 @@ export default defineConfig({
           'https://*.google.cat/search*',
           'https://www.bing.com/search*',
           'https://cn.bing.com/search*',
-          'https://www.baidu.com/s*',
+          'https://www.baidu.com/*',
           'https://duckduckgo.com/*',
           'https://www.deepl.com/translator*',
         ],
