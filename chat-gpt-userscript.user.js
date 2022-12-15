@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name               chat-gpt-search-sidebar
-// @name:zh-CN         搜索结果侧栏显示 ChatGPT 回答
+// @name               ChatGPT Search
+// @name:zh-CN         ChatGPT 搜索
+// @name:zh-TW         ChatGPT 搜索
 // @namespace          https://greasyfork.org/scripts/456077
-// @version            0.7.0
+// @version            0.7.1
 // @author             Zheng Bang-Bo(https://github.com/zhengbangbo)
-// @description        Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)
-// @description:zh-CN  在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
+// @description        ChatGPT answers displayed in sidebar after search (Google, Bing, Baidu, DuckDuckGo and DeepL)
+// @description:zh-CN  搜索后侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
+// @description:zh-TW  搜索後側欄顯示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）
 // @license            MIT
 // @icon               https://github.com/zhengbangbo/oss/raw/main/logo/chat-gpt-userscript.png
 // @downloadURL        https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js
@@ -238,13 +240,6 @@
       return false;
     }
   }
-  function isTokenExpired(text) {
-    try {
-      return JSON.parse(text).detail.code === "token_expired";
-    } catch (error) {
-      return false;
-    }
-  }
   const container = document.createElement("div");
   function getContainer() {
     return container;
@@ -264,7 +259,10 @@
     container2.innerHTML = htmlStr;
   }
   function alertLogin() {
-    containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>');
+    containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank" rel="noreferrer">chat.openai.com</a> first</p>');
+  }
+  function alertFrequentRequests() {
+    containerAlert("<p>Too many requests in 1 hour. Try again later.</p>");
   }
   function removeAccessToken() {
     GM_deleteValue("accessToken");
@@ -333,31 +331,26 @@
           return callback("finish");
         }
       }
-      if (getUserscriptManager() !== "Tampermonkey") {
-        return function(event) {
-          finish();
-          if (event.status === 401) {
-            removeAccessToken();
-            alertLogin();
-          }
-          if (event.status === 403) {
-            removeAccessToken();
-            alertLogin();
-          }
-          if (event.status != 401 && event.status != 200) {
-            removeAccessToken();
-            alertLogin();
-          }
+      finish();
+      return function(event) {
+        console.log(event.status);
+        if (event.status === 401) {
+          removeAccessToken();
+          alertLogin();
+        }
+        if (event.status === 403) {
+          alertLogin();
+        }
+        if (event.status === 429) {
+          alertFrequentRequests();
+        }
+        if (getUserscriptManager() !== "Tampermonkey") {
           if (event.response) {
             const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0];
             containerShow(answer);
           }
-        };
-      } else {
-        return function() {
-          finish();
-        };
-      }
+        }
+      };
     }
     function onloadstart() {
       if (getUserscriptManager() === "Tampermonkey") {
@@ -369,16 +362,6 @@
             }
             let responseItem = String.fromCharCode(...Array.from(value));
             const items = responseItem.split("\n\n");
-            if (isTokenExpired(items[0])) {
-              removeAccessToken();
-              alertLogin();
-              return;
-            }
-            if (isBlockedbyCloudflare(responseItem)) {
-              removeAccessToken();
-              alertLogin();
-              return;
-            }
             if (items.length > 2) {
               const lastItem = items.slice(-3, -2)[0];
               if (lastItem.startsWith("data: [DONE]")) {
