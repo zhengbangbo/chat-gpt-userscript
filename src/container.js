@@ -23,7 +23,15 @@ function containerAlert(htmlStr) {
 }
 
 export function alertLogin() {
-  containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank">chat.openai.com</a> first</p>')
+  containerAlert('<p>Please login at <a href="https://chat.openai.com" target="_blank" rel="noreferrer">chat.openai.com</a> first</p>')
+}
+
+export function alertBlockedByCloudflare() {
+  containerAlert('<p>Please pass Cloudflare security check at <a href="https://chat.openai.com" target="_blank" rel="noreferrer">chat.openai.com</a></p>')
+}
+
+export function alertFrequentRequests() {
+  containerAlert('<p>Too many requests in 1 hour. Try again later.</p>')
 }
 
 export function alertUnknowError() {

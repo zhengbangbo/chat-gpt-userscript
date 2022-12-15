@@ -2,7 +2,7 @@ import { getAccessToken, removeAccessToken } from './token.js'
 import { GM_xmlhttpRequest } from '$'
 import { getUserscriptManager } from './user-manager.js'
 import { uuidv4 } from './uuid.js'
-import { containerShow, alertLogin } from './container.js'
+import { containerShow, alertLogin, alertBlockedByCloudflare, alertFrequentRequests } from './container.js'
 import { isTokenExpired, isBlockedbyCloudflare } from './parse.js'
 
 export async function getAnswer(question, callback) {
@@ -21,33 +21,26 @@ export async function getAnswer(question, callback) {
         return callback("finish")
       }
     }
-    if (getUserscriptManager() !== "Tampermonkey") {
-      return function (event) {
-        finish()
-        if (event.status === 401) {
-          removeAccessToken()
-          alertLogin()
-        }
-        if (event.status === 403) {
-          // alertNetworkException()
-          // maybe feel better
-          removeAccessToken()
-          alertLogin()
-        }
-        if (event.status != 401 && event.status != 200) {
-          // alertUnknowError()
-          // too...
-          removeAccessToken()
-          alertLogin()
-        }
+    finish()
+    return function (event) {
+      console.log(event.status)
+      if (event.status === 401) {
+        removeAccessToken()
+        alertLogin()
+      }
+      if (event.status === 403) {
+        // alertNetworkException()
+        // maybe feel better
+        alertLogin()
+      }
+      if (event.status === 429) {
+        alertFrequentRequests()
+      }
+      if (getUserscriptManager() !== "Tampermonkey") {
         if (event.response) {
           const answer = JSON.parse(event.response.split("\n\n").slice(-3, -2)[0].slice(6)).message.content.parts[0]
           containerShow(answer)
         }
-      }
-    } else {
-      return function () {
-        finish()
       }
     }
   }
@@ -61,16 +54,6 @@ export async function getAnswer(question, callback) {
           }
           let responseItem = String.fromCharCode(...Array.from(value))
           const items = responseItem.split('\n\n')
-          if (isTokenExpired(items[0])) {
-            removeAccessToken()
-            alertLogin()
-            return
-          }
-          if (isBlockedbyCloudflare(responseItem)) {
-            removeAccessToken()
-            alertLogin()
-            return
-          }
           // Sometimes receive more than one message at a time.
           // Pick the last item
           if (items.length > 2) {
