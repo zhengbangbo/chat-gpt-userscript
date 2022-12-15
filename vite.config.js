@@ -10,13 +10,15 @@ export default defineConfig({
       userscript: {
         icon: 'https://github.com/zhengbangbo/oss/raw/main/logo/chat-gpt-userscript.png',
         name: {
-          '': 'chat-gpt-search-sidebar',
-          "zh-CN": '搜索结果侧栏显示 ChatGPT 回答',
+          '': 'ChatGPT Search',
+          "zh-CN": 'ChatGPT 搜索',
+          "zh-TW": 'ChatGPT 搜索',
         },
         version,
         description: {
-          '': 'Display ChatGPT response alongside Search results(Google/Bing/Baidu/DuckDuckGo/DeepL)',
-          'zh-CN': '在搜索结果侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）',
+          '': 'ChatGPT answers displayed in sidebar after search (Google, Bing, Baidu, DuckDuckGo and DeepL)',
+          'zh-CN': '搜索后侧栏显示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）',
+          'zh-TW': '搜索後側欄顯示 ChatGPT 回答（Google、Bing、百度、DuckDuckGo和DeepL）',
         },
         author: 'Zheng Bang-Bo(https://github.com/zhengbangbo)',
         match: [
