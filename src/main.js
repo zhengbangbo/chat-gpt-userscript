@@ -86,15 +86,35 @@ function initUI() {
     }
   }
   function baiduInjectContainer() {
-    if (getPosition() === 1) {
-      const container = getContainer()
-      const siderbarContainer = document.getElementById("content_right");
-      siderbarContainer.prepend(container);
-    } else {
-      GM_addStyle('.chat-gpt-container{max-width: 100%!important}')
-      const container2 = getContainer();
-      const siderbarContainer = document.querySelector("#content_left");
-      siderbarContainer.prepend(container2);
+    if (location.href.match(/^https:\/\/www.baidu.com\/($|\?)/)) {
+      listenTitleChange();
+    }else{
+      loadContainer();
+      listenTitleChange();
+    }
+    function loadContainer(){
+      if (getPosition() === 1) {
+        const container2 = getContainer();
+        const siderbarContainer = document.getElementById("content_right");
+        siderbarContainer.prepend(container2);
+      } else {
+        GM_addStyle(".chat-gpt-container{max-width: 100%!important}");
+        const container2 = getContainer();
+        const siderbarContainer = document.querySelector("#content_left");
+        siderbarContainer.prepend(container2);
+      }
+    }
+    function listenTitleChange() {
+      let title = document.querySelector("title");
+      let oldTitle = title.textContent;
+      title.addEventListener("DOMSubtreeModified", function() {
+        if (oldTitle !== this.textContent) {
+          (e=>{const t=document.createElement("style");t.dataset.source="vite-plugin-monkey",t.innerText=e,document.head.appendChild(t)})(".chat-gpt-container{max-width:369px;margin-bottom:30px;border-radius:8px;border:1px solid #dadce0;padding:15px;flex-basis:0;flex-grow:1;word-wrap:break-word;white-space:pre-wrap}.chat-gpt-container p{margin:0}.chat-gpt-container .prefix{font-weight:700}.chat-gpt-container .loading{color:#b6b8ba;animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}@keyframes pulse{0%,to{opacity:1}50%{opacity:.5}}.chat-gpt-container.sidebar-free{margin-left:60px;height:fit-content}.chat-gpt-container pre{white-space:pre-wrap;min-width:0;margin-bottom:0;line-height:20px}.chat-gpt-translate-button{border-radius:8px;border:1px solid #dadce0;padding:5px}.chat-gpt-translate-button:hover{color:#006494;transition:color .1s ease-out}.chat-gpt-translate-button[disabled]{color:#eee}");
+          initContainer();
+          loadContainer();
+          getAnswer(getQuestion());
+        }
+      }, false);
     }
   }
   function duckduckgoInjectContainer() {
