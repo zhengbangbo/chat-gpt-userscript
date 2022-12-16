@@ -106,15 +106,17 @@ function initUI() {
     }
     function listenTitleChange() {
       let title = document.querySelector("title");
-      let oldTitle = title.textContent;
-      title.addEventListener("DOMSubtreeModified", function() {
-        if (oldTitle !== this.textContent) {
+      let oldTitle = title.innerHTML;
+      const observer = new MutationObserver(function(mutations) {
+        if (oldTitle !== title.innerHTML) {
           (e=>{const t=document.createElement("style");t.dataset.source="vite-plugin-monkey",t.innerText=e,document.head.appendChild(t)})(".chat-gpt-container{max-width:369px;margin-bottom:30px;border-radius:8px;border:1px solid #dadce0;padding:15px;flex-basis:0;flex-grow:1;word-wrap:break-word;white-space:pre-wrap}.chat-gpt-container p{margin:0}.chat-gpt-container .prefix{font-weight:700}.chat-gpt-container .loading{color:#b6b8ba;animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}@keyframes pulse{0%,to{opacity:1}50%{opacity:.5}}.chat-gpt-container.sidebar-free{margin-left:60px;height:fit-content}.chat-gpt-container pre{white-space:pre-wrap;min-width:0;margin-bottom:0;line-height:20px}.chat-gpt-translate-button{border-radius:8px;border:1px solid #dadce0;padding:5px}.chat-gpt-translate-button:hover{color:#006494;transition:color .1s ease-out}.chat-gpt-translate-button[disabled]{color:#eee}");
           initContainer();
           loadContainer();
           getAnswer(getQuestion());
+          oldTitle = title.innerHTML
         }
-      }, false);
+      });
+      observer.observe(title, {childList: true,});
     }
   }
   function duckduckgoInjectContainer() {
