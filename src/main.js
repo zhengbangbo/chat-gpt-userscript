@@ -1,21 +1,10 @@
 import { GM_addStyle, GM_getValue, GM_registerMenuCommand, GM_setValue, GM_unregisterMenuCommand } from '$'
-import { getAnswer } from './answer.js'
+import { getAnswer } from './chatgpt.js'
 import { getContainer, initContainer } from './container.js'
+import i18n from './i18n.js'
 import './style/default.css'
 
 function getWebsite() {
-  function configRequestImmediately(name) {
-    return {
-      name,
-      type: "immediately"
-    }
-  }
-  function configRequestAfterClickButton(name) {
-    return {
-      name,
-      type: "after-click-button"
-    }
-  }
   if (location.hostname.indexOf(".google.") !== -1) {
     return configRequestImmediately("google")
   }
@@ -30,7 +19,20 @@ function getWebsite() {
     case 'www.deepl.com':
       return configRequestAfterClickButton("deepl")
     default:
-      return 'unknow'
+      throw new Error(`unknow website: ${location.hostname}`)
+  }
+
+  function configRequestImmediately(name) {
+    return {
+      name,
+      type: "immediately"
+    }
+  }
+  function configRequestAfterClickButton(name) {
+    return {
+      name,
+      type: "after-click-button"
+    }
   }
 }
 
@@ -51,6 +53,28 @@ function setPosition(newPosition) {
 }
 
 function initUI() {
+  initContainer()
+
+  switch (getWebsite().name) {
+    case 'google':
+      googleInjectContainer()
+      break
+    case 'bing':
+      bingInjectContainer()
+      break
+    case 'baidu':
+      baiduInjectContainer()
+      break
+    case 'duckduckgo':
+      duckduckgoInjectContainer()
+      break
+    case 'deepl':
+      deeplInjectContainer()
+      break
+    default:
+      alertUnknowError()
+  }
+
   function googleInjectContainer() {
     if (getPosition() === 1) {
       // side
@@ -106,7 +130,7 @@ function initUI() {
     const container = getContainer()
     container.style.maxWidth = '1000px';
     const button = document.createElement("button");
-    button.innerHTML = "Chat GPT Translate";
+    button.innerHTML = i18n("chatGPTTranslate");
     button.className = "chat-gpt-translate-button"
     document.getElementsByClassName("lmt__textarea_container")[0].appendChild(button);
     button.addEventListener("click", function () {
@@ -126,37 +150,15 @@ function initUI() {
       })
     });
   }
-
-  initContainer()
-
-  switch (getWebsite().name) {
-    case 'google':
-      googleInjectContainer()
-      break
-    case 'bing':
-      bingInjectContainer()
-      break
-    case 'baidu':
-      baiduInjectContainer()
-      break
-    case 'duckduckgo':
-      duckduckgoInjectContainer()
-      break
-    case 'deepl':
-      deeplInjectContainer()
-      break
-    default:
-      alertUnknowError()
-  }
 }
 
 function initMenu() {
-  let position_id = GM_registerMenuCommand("Container Position - Side(1)/Top(0): " + getPosition(), position_switch, "M");
+  let position_id = GM_registerMenuCommand(i18n("containerPosition") + getPosition(), position_switch, "M");
 
   function position_switch() {
     GM_unregisterMenuCommand(position_id);
     setPosition((getPosition() + 1) % 2)
-    position_id = GM_registerMenuCommand("Container Position - Side(1)/Top(0): " + getPosition(), position_switch, "M");
+    position_id = GM_registerMenuCommand(i18n("containerPosition") + getPosition(), position_switch, "M");
     location.reload()
   }
 }

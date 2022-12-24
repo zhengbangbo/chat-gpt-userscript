@@ -1,11 +1,68 @@
-import { getAccessToken, removeAccessToken } from './token.js'
-import { GM_xmlhttpRequest } from '$'
+import { GM_setValue, GM_getValue, GM_deleteValue,GM_xmlhttpRequest } from '$'
 import { getUserscriptManager } from './user-manager.js'
 import { uuidv4 } from './uuid.js'
 import { containerShow, alertLogin, alertBlockedByCloudflare, alertFrequentRequests } from './container.js'
 import { isTokenExpired, isBlockedbyCloudflare } from './parse.js'
 
+// export async function genTitle(message_id, model) {
+//   try {
+//     const accessToken = await getAccessToken()
+//     const conversation_id = uuidv4()
+//     GM_xmlhttpRequest({
+//       method: "POST",
+//       url: `https://chat.openai.com/backend-api/conversation/gen_title/${conversation_id}`,
+//       headers: {
+//         "Content-Type": "	application/json",
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//     })
+//   } catch(error) {
+
+//   }
+// }
+
 export async function getAnswer(question, callback) {
+  try {
+    const accessToken = await getAccessToken()
+    GM_xmlhttpRequest({
+      method: "POST",
+      url: "https://chat.openai.com/backend-api/conversation",
+      headers: {
+        "Content-Type": "	application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      responseType: responseType(),
+      data: JSON.stringify({
+        action: "next",
+        messages: [
+          {
+            id: uuidv4(),
+            role: "user",
+            content: {
+              content_type: "text",
+              parts: [question],
+            },
+          },
+        ],
+        model: "text-davinci-002-render",
+        parent_message_id: uuidv4(),
+      }),
+      onloadstart: onloadstart(),
+      onload: onload(),
+      onerror: function (event) {
+        console.error("getAnswer error: ", event)
+      },
+      ontimeout: function (event) {
+        console.error("getAnswer timeout: ", event)
+      }
+    })
+  } catch (error) {
+    if (error === "UNAUTHORIZED") {
+      removeAccessToken()
+      alertLogin()
+    }
+    console.error("getAnswer error: ", error)
+  }
   function responseType() {
     // Violentmonkey don't support stream responseType
     // https://violentmonkey.github.io/api/gm/#gm_xmlhttprequest
@@ -29,9 +86,7 @@ export async function getAnswer(question, callback) {
         alertLogin()
       }
       if (event.status === 403) {
-        // alertNetworkException()
-        // maybe feel better
-        alertLogin()
+        alertBlockedByCloudflare()
       }
       if (event.status === 429) {
         alertFrequentRequests()
@@ -78,45 +133,39 @@ export async function getAnswer(question, callback) {
       }
     }
   }
-  try {
-    const accessToken = await getAccessToken()
-    GM_xmlhttpRequest({
-      method: "POST",
-      url: "https://chat.openai.com/backend-api/conversation",
-      headers: {
-        "Content-Type": "	application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      responseType: responseType(),
-      data: JSON.stringify({
-        action: "next",
-        messages: [
-          {
-            id: uuidv4(),
-            role: "user",
-            content: {
-              content_type: "text",
-              parts: [question],
-            },
-          },
-        ],
-        model: "text-davinci-002-render",
-        parent_message_id: uuidv4(),
-      }),
-      onloadstart: onloadstart(),
-      onload: onload(),
-      onerror: function (event) {
-        console.error("getAnswer error: ", event)
-      },
-      ontimeout: function (event) {
-        console.error("getAnswer timeout: ", event)
-      }
-    })
-  } catch (error) {
-    if (error === "UNAUTHORIZED") {
-      removeAccessToken()
-      alertLogin()
+}
+
+export function removeAccessToken() {
+  GM_deleteValue("accessToken")
+}
+
+export function getAccessToken() {
+  return new Promise((resolve, rejcet) => {
+    let accessToken = GM_getValue("accessToken")
+    if (!accessToken) {
+      GM_xmlhttpRequest({
+        url: "https://chat.openai.com/api/auth/session",
+        onload: function (response) {
+          if (isBlockedbyCloudflare(response.responseText)) {
+            alertLogin()
+            return
+          }
+          const accessToken = JSON.parse(response.responseText).accessToken
+          if (!accessToken) {
+            rejcet("UNAUTHORIZED")
+          }
+          GM_setValue("accessToken", accessToken)
+          resolve(accessToken)
+        },
+        onerror: function (error) {
+          rejcet(error)
+        },
+        ontimeout: () => {
+          console.log("getAccessToken timeout!")
+        }
+      })
+    } else {
+      resolve(accessToken)
     }
-    console.error("getAnswer error: ", error)
-  }
+  })
 }
