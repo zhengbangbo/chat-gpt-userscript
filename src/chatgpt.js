@@ -80,7 +80,6 @@ export async function getAnswer(question, callback) {
     }
     finish()
     return function (event) {
-      console.log(event.status)
       if (event.status === 401) {
         removeAccessToken()
         alertLogin()
@@ -140,8 +139,8 @@ export function removeAccessToken() {
 }
 
 export function getAccessToken() {
-  return new Promise((resolve, rejcet) => {
-    let accessToken = GM_getValue("accessToken")
+  return new Promise(async (resolve, rejcet) => {
+    const accessToken = await GM_getValue("accessToken")
     if (!accessToken) {
       GM_xmlhttpRequest({
         url: "https://chat.openai.com/api/auth/session",
@@ -161,7 +160,7 @@ export function getAccessToken() {
           rejcet(error)
         },
         ontimeout: () => {
-          console.log("getAccessToken timeout!")
+          console.error("getAccessToken timeout!")
         }
       })
     } else {

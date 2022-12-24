@@ -145,7 +145,6 @@ function initUI() {
       let outlang = document.querySelectorAll("strong[data-testid='deepl-ui-tooltip-target']")[0].innerHTML
       let question = 'Translate the following paragraph into ' + outlang + ' and only ' + outlang + '\n\n' + document.getElementById('source-dummydiv').innerHTML
       getAnswer(question, (t) => {
-        console.log(t)
         button.disabled = false
       })
     });
@@ -172,5 +171,5 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.log(e);
+  console.error(e);
 });
