@@ -5,7 +5,8 @@ export function getUserscriptManager() {
   try {
     const userscriptManager = GM_info.scriptHandler
     return userscriptManager
-  } catch (error) {
+  }
+  catch (error) {
     return 'other'
   }
 }

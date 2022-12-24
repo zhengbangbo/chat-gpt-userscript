@@ -1,10 +1,11 @@
 export function isBlockedbyCloudflare(resp) {
   try {
-    const html = new DOMParser().parseFromString(resp, "text/html")
+    const html = new DOMParser().parseFromString(resp, 'text/html')
     // cloudflare html be like: https://github.com/zhengbangbo/chat-gpt-userscript/blob/512892caabef2820a3dc3ddfbcf5464fc63c405a/parse.js
     const title = html.querySelector('title')
     return title.innerText === 'Just a moment...'
-  } catch (error) {
+  }
+  catch (error) {
     return false
   }
 }
@@ -12,7 +13,8 @@ export function isBlockedbyCloudflare(resp) {
 export function isTokenExpired(text) {
   try {
     return JSON.parse(text).detail.code === 'token_expired'
-  } catch (error) {
+  }
+  catch (error) {
     return false
   }
 }

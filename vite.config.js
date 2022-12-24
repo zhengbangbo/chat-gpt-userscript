@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite'
+import monkey from 'vite-plugin-monkey'
 import { version } from './package.json'
-import monkey from 'vite-plugin-monkey';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,10 +11,10 @@ export default defineConfig({
         icon: 'https://github.com/zhengbangbo/oss/raw/main/logo/chat-gpt-userscript.png',
         name: {
           '': 'ChatGPT Search',
-          "zh-CN": 'ChatGPT 搜索',
-          "zh-SG": 'ChatGPT 搜索',
-          "zh-TW": 'ChatGPT 搜索',
-          "zh-HK": 'ChatGPT 搜索',
+          'zh-CN': 'ChatGPT 搜索',
+          'zh-SG': 'ChatGPT 搜索',
+          'zh-TW': 'ChatGPT 搜索',
+          'zh-HK': 'ChatGPT 搜索',
         },
         version,
         description: {
@@ -235,8 +235,8 @@ export default defineConfig({
         updateURL: 'https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js',
         downloadURL: 'https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js',
         connect: 'chat.openai.com',
-        license: 'MIT'
+        license: 'MIT',
       },
     }),
   ],
-});
+})
