@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import i18n, { config } from '../src/i18n.js'
+import { config, i18n } from '../src/utils/i18n'
 
 describe('i18n', () => {
   beforeEach(() => {
