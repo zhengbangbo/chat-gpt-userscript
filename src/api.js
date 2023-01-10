@@ -1,25 +1,7 @@
+import { isBlockedbyCloudflare, uuid } from './utils'
 import { getUserscriptManager } from './user-manager.js'
-import { uuidv4 } from './uuid.js'
 import { alertBlockedByCloudflare, alertFrequentRequests, alertLogin, containerShow } from './container.js'
-import { isBlockedbyCloudflare } from './parse.js'
 import { GM_deleteValue, GM_getValue, GM_setValue, GM_xmlhttpRequest } from '$'
-
-// export async function genTitle(message_id, model) {
-//   try {
-//     const accessToken = await getAccessToken()
-//     const conversation_id = uuidv4()
-//     GM_xmlhttpRequest({
-//       method: "POST",
-//       url: `https://chat.openai.com/backend-api/conversation/gen_title/${conversation_id}`,
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${accessToken}`,
-//       },
-//     })
-//   } catch(error) {
-
-//   }
-// }
 
 export async function getAnswer(question, callback) {
   try {
@@ -36,7 +18,7 @@ export async function getAnswer(question, callback) {
         action: 'next',
         messages: [
           {
-            id: uuidv4(),
+            id: uuid(),
             role: 'user',
             content: {
               content_type: 'text',
@@ -45,7 +27,7 @@ export async function getAnswer(question, callback) {
           },
         ],
         model: 'text-davinci-002-render',
-        parent_message_id: uuidv4(),
+        parent_message_id: uuid(),
       }),
       onloadstart: onloadstart(),
       onload: onload(),
