@@ -1,8 +1,8 @@
-import { getAnswer } from './chatgpt.js'
+import { getAnswer } from './api.js'
 import { alertUnknowError, getContainer, initContainer } from './container.js'
 import i18n from './i18n.js'
 import { GM_addStyle, GM_getValue, GM_registerMenuCommand, GM_setValue, GM_unregisterMenuCommand } from '$'
-import './style/default.css'
+import './style.css'
 
 function getWebsite() {
   if (location.hostname.includes('.google.'))

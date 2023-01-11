@@ -1,12 +1,14 @@
 import { defineConfig } from 'vite'
-import monkey from 'vite-plugin-monkey'
+import monkey, { cdn } from 'vite-plugin-monkey'
+import preact from '@preact/preset-vite'
 import { version } from './package.json'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    preact(),
     monkey({
-      entry: 'src/main.js',
+      entry: 'src/main.jsx',
       userscript: {
         icon: 'https://github.com/zhengbangbo/oss/raw/main/logo/chat-gpt-userscript.png',
         name: {
@@ -236,6 +238,11 @@ export default defineConfig({
         downloadURL: 'https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js',
         connect: 'chat.openai.com',
         license: 'MIT',
+      },
+      build: {
+        externalGlobals: {
+          preact: cdn.jsdelivr('preact', 'dist/preact.min.js'),
+        },
       },
     }),
   ],
