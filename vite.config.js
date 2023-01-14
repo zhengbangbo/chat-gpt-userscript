@@ -1,12 +1,14 @@
 import { defineConfig } from 'vite'
-import monkey from 'vite-plugin-monkey'
+import monkey, { cdn } from 'vite-plugin-monkey'
+import vue from '@vitejs/plugin-vue'
 import { version } from './package.json'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    vue(),
     monkey({
-      entry: 'src/main.js',
+      entry: 'src/main.ts',
       userscript: {
         icon: 'https://github.com/zhengbangbo/oss/raw/main/logo/chat-gpt-userscript.png',
         name: {
@@ -236,6 +238,11 @@ export default defineConfig({
         downloadURL: 'https://greasyfork.org/scripts/456077-chat-gpt-search-sidebar/code/chat-gpt-search-sidebar.user.js',
         connect: 'chat.openai.com',
         license: 'MIT',
+      },
+      build: {
+        externalGlobals: {
+          vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js'),
+        },
       },
     }),
   ],
