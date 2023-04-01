@@ -28,6 +28,9 @@ function initUI(container: HTMLDivElement) {
     case 'duckduckgo':
       duckduckgoInjectContainer(container)
       break
+    case 'startpage':
+      startpageInjectContainer(container)
+      break
     case 'deepl':
       deeplInjectContainer(container)
       break
@@ -84,6 +87,11 @@ function initUI(container: HTMLDivElement) {
   }
   function duckduckgoInjectContainer(container: HTMLDivElement) {
     const ChatGPTCard: Element = document.getElementsByClassName('results--sidebar')[0]
+    ChatGPTCard.prepend(container)
+  }
+  function startpageInjectContainer(container: HTMLDivElement) {
+    const ChatGPTCard: Element = document.getElementsByClassName('sidebar-results')[0]
+    container2.classList.add("sx-kp");
     ChatGPTCard.prepend(container)
   }
   function deeplInjectContainer(container: HTMLDivElement) {
