@@ -18,6 +18,7 @@ export function config(lang: string) {
         networkException: '网络异常，请刷新页面。',
         containerPosition: '容器位置 - 侧面(1)/顶部(0): ',
         chatGPTTranslate: 'ChatGPT 翻译',
+        generalError: "NEEDS TRANSLATING: Error... Failed to get valid response from ChatGPT",
       }
       break
     case 'zh-TW':
@@ -31,6 +32,7 @@ export function config(lang: string) {
         networkException: '網路異常，請刷新頁面。',
         containerPosition: '容器位置 - 側面(1)/頂部(0):',
         chatGPTTranslate: 'ChatGPT 翻譯',
+        generalError: "NEEDS TRANSLATING: Error... Failed to get valid response from ChatGPT",
       }
       break
     default:
@@ -43,6 +45,7 @@ export function config(lang: string) {
         networkException: 'Network exception, please refresh the page.',
         containerPosition: 'Container Position - Side(1)/Top(0): ',
         chatGPTTranslate: 'ChatGPT Translate',
+        generalError: "Error... Failed to get valid response from ChatGPT",
       }
   }
   return result
