@@ -145,6 +145,9 @@ async function getAnswer(question: string, callback) {
 
         if (event.status === 429)
           cardStatus.value = 'TooManyRequests'
+        
+        if (event.status !== 200)
+          cardStatus.value = 'GeneralError'
 
         if (getUserscriptManager() !== 'Tampermonkey') {
           if (event.response)
@@ -160,6 +163,8 @@ async function getAnswer(question: string, callback) {
 
 function getQuestion() {
   switch (getWebsite().name) {
+    case 'startpage':
+      return document.getElementById("q").value;
     case 'baidu':
       return new URL(window.location.href).searchParams.get('wd')
     case 'deepl': {
