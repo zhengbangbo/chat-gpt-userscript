@@ -141,14 +141,15 @@ async function getAnswer(question: string, callback) {
           removeAccessToken()
           cardStatus.value = 'PleaseLogin'
         }
+                
+        if (event.status !== 200)
+          cardStatus.value = 'GeneralError'
+          
         if (event.status === 403)
           cardStatus.value = 'BlockedByCloudflare'
 
         if (event.status === 429)
           cardStatus.value = 'TooManyRequests'
-        
-        if (event.status !== 200)
-          cardStatus.value = 'GeneralError'
 
         if (getUserscriptManager() !== 'Tampermonkey') {
           if (event.response)
