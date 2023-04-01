@@ -12,6 +12,7 @@ enum CardStatus {
   'PleaseLogin',
   'UnknownError',
   'TooManyRequests',
+  'GeneralError',
 }
 const answer = ref(null)
 const cardStatus = ref<CardStatus>()
