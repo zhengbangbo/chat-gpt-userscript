@@ -25,4 +25,7 @@ defineProps(['status', 'answer'])
   <div v-else-if="status === 'TooManyRequests'" class="chat-gpt-container">
     <p>{{ i18n('tooManyRequests') }}</p>
   </div>
+    <div v-else-if="status === 'GeneralError'" class="chat-gpt-container">
+    <p>{{ i18n('generalError') }}</p>
+  </div>
 </template>
