@@ -8,6 +8,9 @@
 [![license](https://img.shields.io/github/license/zhengbangbo/chat-gpt-userscript?color=blue)](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/LICENSE)
 [![](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://chat.imzbb.cc)
 
+> **Warning**
+> Due to long-term non-use of the Greasemonkey script, coupled with complex network issues, I have decided not to maintain this project anymore.
+
 [中文版](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/README.zh-CN.md)
 
 A [Userscript](https://en.wikipedia.org/wiki/Userscript)(monkeyscript) to display ChatGPT answer alongside

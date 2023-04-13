@@ -8,6 +8,9 @@
 [![license](https://img.shields.io/github/license/zhengbangbo/chat-gpt-userscript?color=blue)](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/LICENSE)
 [![](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://chat.imzbb.cc)
 
+> **Warning**
+> 由于长期未使用该油猴脚本，加上网络问题较为复杂，因此我决定不再维护这个项目。
+
 [English Version](https://github.com/zhengbangbo/chat-gpt-userscript/blob/main/README.md)
 
 显示 ChatGPT 回答的油猴脚本
