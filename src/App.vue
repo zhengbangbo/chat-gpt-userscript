@@ -12,6 +12,7 @@ enum CardStatus {
   'PleaseLogin',
   'UnknownError',
   'TooManyRequests',
+  'GeneralError',
 }
 const answer = ref(null)
 const cardStatus = ref<CardStatus>()
@@ -140,6 +141,10 @@ async function getAnswer(question: string, callback) {
           removeAccessToken()
           cardStatus.value = 'PleaseLogin'
         }
+                
+        if (event.status !== 200)
+          cardStatus.value = 'GeneralError'
+          
         if (event.status === 403)
           cardStatus.value = 'BlockedByCloudflare'
 
@@ -160,6 +165,8 @@ async function getAnswer(question: string, callback) {
 
 function getQuestion() {
   switch (getWebsite().name) {
+    case 'startpage':
+      return document.getElementById("q").value;
     case 'baidu':
       return new URL(window.location.href).searchParams.get('wd')
     case 'deepl': {

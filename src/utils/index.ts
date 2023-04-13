@@ -16,6 +16,8 @@ export function getWebsite() {
       return configRequestImmediately('baidu')
     case 'duckduckgo.com':
       return configRequestImmediately('duckduckgo')
+    case 'www.startpage.com':
+      return configRequestImmediately('startpage')
     case 'www.deepl.com':
       return configRequestAfterClickButton('deepl')
     default:
